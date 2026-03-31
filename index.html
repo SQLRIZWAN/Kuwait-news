@@ -48,7 +48,13 @@
     
     <title>KWT News - Kuwait & World News</title>
     
-    <!-- PWA Manifest removed - data: URLs not supported on all mobile browsers -->
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="KWT News">
+    <meta name="mobile-web-app-capable" content="yes">
     
     <!-- Preconnect to external domains -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -2328,6 +2334,34 @@
                                 </div>
                             </div>
 
+                            {/* ── Add to Home Screen ── */}
+                            <div style={{padding:'4px 16px 12px'}}>
+                                <button
+                                    onClick={() => {
+                                        const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent.toLowerCase());
+                                        const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+                                        if (isStandalone) {
+                                            alert('KWT News is already installed on your device!');
+                                        } else if (window.kwtInstallReady && typeof installPWA === 'function') {
+                                            installPWA();
+                                            setDrawerOpen(false);
+                                        } else if (isIOS) {
+                                            alert('To install: tap the Share icon (\u{1F4E4}) at the bottom of Safari, then tap \u201cAdd to Home Screen\u201d');
+                                        } else {
+                                            alert('Open KWT News in Chrome or Edge and look for the install icon (\u2795) in the address bar.');
+                                        }
+                                    }}
+                                    style={{width:'100%',padding:'10px 12px',background:'rgba(245,166,35,0.07)',border:'1px solid rgba(245,166,35,0.18)',borderRadius:'10px',cursor:'pointer',display:'flex',alignItems:'center',gap:'10px'}}
+                                >
+                                    <span style={{fontSize:'16px',flexShrink:0}}>📲</span>
+                                    <div style={{flex:1,textAlign:'left'}}>
+                                        <p style={{fontSize:'13px',color:'rgba(255,255,255,0.85)',fontWeight:600,margin:0,lineHeight:1.3}}>Add to Home Screen</p>
+                                        <p style={{fontSize:'10px',color:'rgba(255,255,255,0.32)',margin:0,marginTop:'2px'}}>Install KWT News app</p>
+                                    </div>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(245,166,35,0.55)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                                </button>
+                            </div>
+
                             {/* ── Footer: Social + links ── */}
                             <div style={{padding:'12px 16px 24px',marginTop:'auto'}}>
                                 <div style={{height:'1px',background:'rgba(255,255,255,0.07)',marginBottom:'16px'}}/>
@@ -4586,6 +4620,17 @@
     <!-- FIX 6: Share links use hash (#news-ID) which works on any host including GitHub Pages -->
     <!-- firebase.json rewrite is only needed for kwtnews.com direct URL sharing -->
 
+    <!-- Service Worker Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function () {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(function (reg) { console.log('[KWT] SW registered, scope:', reg.scope); })
+                    .catch(function (err) { console.warn('[KWT] SW registration failed:', err); });
+            });
+        }
+    </script>
+
     <!-- PWA Install Prompt Only -->
     <script>
         // PWA Install Prompt
@@ -4595,9 +4640,10 @@
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
             deferredPrompt = e;
+            window.kwtInstallReady = true;
             setTimeout(() => {
                 if (installPrompt) installPrompt.classList.add('show');
-            }, 3000);
+            }, 500);
         });
         
         function installPWA() {
