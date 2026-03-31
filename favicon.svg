@@ -1,0 +1,104 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 580">
+  <defs>
+    <!-- Light blue-gray background gradient -->
+    <radialGradient id="bgGrad" cx="55%" cy="30%" r="70%">
+      <stop offset="0%"   stop-color="#ddeaf5"/>
+      <stop offset="60%"  stop-color="#cddde8"/>
+      <stop offset="100%" stop-color="#bacfde"/>
+    </radialGradient>
+    <!-- Tower navy-blue gradient -->
+    <linearGradient id="towerGrad" x1="10%" y1="0%" x2="90%" y2="100%">
+      <stop offset="0%"   stop-color="#0b2d55"/>
+      <stop offset="50%"  stop-color="#0f3d72"/>
+      <stop offset="100%" stop-color="#1a5c95"/>
+    </linearGradient>
+    <!-- Green gradient for WiFi + Globe -->
+    <linearGradient id="greenGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%"   stop-color="#0d7038"/>
+      <stop offset="100%" stop-color="#1db954"/>
+    </linearGradient>
+  </defs>
+
+  <!-- ── BACKGROUND ── -->
+  <rect width="500" height="580" fill="url(#bgGrad)"/>
+
+  <!-- ── GROUND ARC ── -->
+  <ellipse cx="205" cy="422" rx="140" ry="11" fill="url(#towerGrad)" opacity="0.9"/>
+
+  <!-- ═══════════════════════════════════════════
+       TOWER 1 — Far-left thin spire (no sphere)
+  ═══════════════════════════════════════════ -->
+  <!-- Shaft -->
+  <rect x="104" y="330" width="11" height="93" rx="2" fill="url(#towerGrad)"/>
+  <!-- Spire (tapers from shaft to tip) -->
+  <polygon points="109.5,158  115,332  104,332" fill="url(#towerGrad)"/>
+
+  <!-- ═══════════════════════════════════════════
+       TOWER 2 — Main Kuwait Tower (tallest, large sphere)
+  ═══════════════════════════════════════════ -->
+  <!-- Lower shaft -->
+  <rect x="168" y="342" width="17" height="80" rx="2" fill="url(#towerGrad)"/>
+  <!-- Wide disc / platform ring -->
+  <rect x="158" y="333" width="37" height="11" rx="3" fill="url(#towerGrad)"/>
+  <!-- Large sphere -->
+  <circle cx="176" cy="298" r="36" fill="url(#towerGrad)"/>
+  <!-- Neck (spire base above sphere) -->
+  <rect x="172" y="262" width="8" height="36" fill="url(#towerGrad)"/>
+  <!-- Spire above neck -->
+  <polygon points="176,138  181,264  171,264" fill="url(#towerGrad)"/>
+
+  <!-- ═══════════════════════════════════════════
+       TOWER 3 — Second Kuwait Tower (medium sphere)
+  ═══════════════════════════════════════════ -->
+  <!-- Lower shaft -->
+  <rect x="217" y="348" width="14" height="74" rx="2" fill="url(#towerGrad)"/>
+  <!-- Disc platform -->
+  <rect x="210" y="340" width="28" height="10" rx="2" fill="url(#towerGrad)"/>
+  <!-- Medium sphere -->
+  <circle cx="224" cy="311" r="27" fill="url(#towerGrad)"/>
+  <!-- Neck -->
+  <rect x="220" y="284" width="8" height="27" fill="url(#towerGrad)"/>
+  <!-- Spire — top of this connects visually to the WiFi signal -->
+  <polygon points="224,168  229,286  219,286" fill="url(#towerGrad)"/>
+
+  <!-- ═══════════════════════════════════════════
+       WIFI SIGNAL — upper right, arcs open upward
+       Origin dot aligns with top of tower-3 spire area
+  ═══════════════════════════════════════════ -->
+  <!-- Center dot -->
+  <circle cx="302" cy="214" r="10" fill="url(#greenGrad)"/>
+  <!-- Arc 1 — inner -->
+  <path d="M278,189 A34,34 0 0 1 326,189"
+        fill="none" stroke="url(#greenGrad)" stroke-width="14" stroke-linecap="round"/>
+  <!-- Arc 2 — middle -->
+  <path d="M258,169 A56,56 0 0 1 346,169"
+        fill="none" stroke="url(#greenGrad)" stroke-width="13" stroke-linecap="round"/>
+  <!-- Arc 3 — outer -->
+  <path d="M240,150 A76,76 0 0 1 364,150"
+        fill="none" stroke="url(#greenGrad)" stroke-width="11" stroke-linecap="round" opacity="0.70"/>
+
+  <!-- ═══════════════════════════════════════════
+       GLOBE — lower right, overlaps tower group
+  ═══════════════════════════════════════════ -->
+  <!-- Main circle -->
+  <circle cx="358" cy="335" r="72"
+          fill="none" stroke="url(#greenGrad)" stroke-width="6.5"/>
+  <!-- Vertical axis line -->
+  <line x1="358" y1="263" x2="358" y2="407"
+        stroke="url(#greenGrad)" stroke-width="4" opacity="0.60"/>
+  <!-- Equator -->
+  <line x1="286" y1="335" x2="430" y2="335"
+        stroke="url(#greenGrad)" stroke-width="4" opacity="0.60"/>
+  <!-- Upper latitude -->
+  <line x1="299" y1="299" x2="417" y2="299"
+        stroke="url(#greenGrad)" stroke-width="2.8" opacity="0.42"/>
+  <!-- Lower latitude -->
+  <line x1="299" y1="371" x2="417" y2="371"
+        stroke="url(#greenGrad)" stroke-width="2.8" opacity="0.42"/>
+  <!-- Left longitude curve -->
+  <path d="M338,264 Q316,335 338,406"
+        fill="none" stroke="url(#greenGrad)" stroke-width="3" opacity="0.52"/>
+  <!-- Right longitude curve -->
+  <path d="M378,264 Q400,335 378,406"
+        fill="none" stroke="url(#greenGrad)" stroke-width="3" opacity="0.52"/>
+</svg>
