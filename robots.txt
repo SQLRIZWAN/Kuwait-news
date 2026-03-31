@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+
+# Block service worker and manifest from being indexed
+Disallow: /sw.js
+
+Sitemap: https://kwtnews.com/sitemap.xml
