@@ -4714,12 +4714,20 @@
     <!-- FIX 6: Share links use hash (#news-ID) which works on any host including GitHub Pages -->
     <!-- firebase.json rewrite is only needed for kwtnews.com direct URL sharing -->
 
-    <!-- Service Worker Registration -->
+    <!-- Service Worker Registration — sw.js handles both caching AND Firebase push -->
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', function () {
                 navigator.serviceWorker.register('/sw.js')
-                    .then(function (reg) { console.log('[KWT] SW registered, scope:', reg.scope); })
+                    .then(function (reg) {
+                        console.log('[KWT] SW registered, scope:', reg.scope);
+                        // Tell Firebase Messaging to use this SW (prevents double-SW conflict)
+                        try {
+                            if (typeof firebase !== 'undefined' && firebase.messaging && firebase.messaging.isSupported()) {
+                                firebase.messaging().useServiceWorker(reg);
+                            }
+                        } catch(e) {}
+                    })
                     .catch(function (err) { console.warn('[KWT] SW registration failed:', err); });
             });
         }
