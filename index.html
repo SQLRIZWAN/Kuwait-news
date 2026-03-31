@@ -197,10 +197,11 @@
     <!-- Babel for JSX -->
     <script src="https://cdn.jsdelivr.net/npm/@babel/standalone@7.23.6/babel.min.js"></script>
     
-    <!-- Firebase - only what we need (no analytics, no messaging) -->
+    <!-- Firebase -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging-compat.js"></script>
     
     <!-- i18next -->
     <script src="https://cdn.jsdelivr.net/npm/i18next@23.7.16/dist/umd/i18next.min.js"></script>
@@ -1012,19 +1013,18 @@
 <body class="antialiased">
     <div id="root">
         <!-- Fallback shown while Babel/React loads -->
-        <div id="initial-loader" style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:radial-gradient(ellipse at 50% 40%, #102040 0%, #07101f 50%, #050d18 100%);gap:28px;padding:24px;">
-            <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
-                <!-- Logo mark -->
+        <div id="initial-loader" style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:radial-gradient(ellipse at 50% 40%, #102040 0%, #07101f 50%, #050d18 100%);gap:24px;padding:24px;">
+            <div style="display:flex;flex-direction:column;align-items:center;gap:10px;">
+                <!-- Logo mark — Kuwait Towers icon -->
                 <div style="position:relative;margin-bottom:4px;">
-                    <svg width="60" height="60" viewBox="0 0 36 36" fill="none" style="filter:drop-shadow(0 6px 22px rgba(245,166,35,0.42));display:block;">
-                        <rect width="36" height="36" rx="11" fill="#F5A623"/>
-                        <text x="18" y="25" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="12.5" font-weight="900" fill="#0A1628">KWT</text>
-                    </svg>
+                    <img src="/icon.svg" width="72" height="72"
+                         style="border-radius:18px;display:block;box-shadow:0 8px 32px rgba(0,0,0,0.5),0 0 0 1px rgba(245,166,35,0.15);"
+                         alt="KWT News">
                 </div>
                 <div style="color:white;font-family:Inter,Arial,sans-serif;font-weight:900;font-size:22px;letter-spacing:0.09em;line-height:1;">KWT NEWS</div>
                 <div style="color:rgba(245,166,35,0.65);font-family:Inter,Arial,sans-serif;font-size:11px;letter-spacing:0.06em;font-weight:500;">kwtnews.com</div>
             </div>
-            <!-- Spinner — thinner ring, faster -->
+            <!-- Spinner -->
             <div style="width:28px;height:28px;border-radius:50%;border:2px solid rgba(245,166,35,0.12);border-top-color:#F5A623;animation:spin 0.68s linear infinite;box-shadow:0 0 12px rgba(245,166,35,0.15);"></div>
             <style>@keyframes spin{to{transform:rotate(360deg)}}</style>
         </div>
@@ -1035,31 +1035,33 @@
     <div id="install-prompt" class="install-prompt">
         <div class="install-prompt-inner">
             <div class="install-prompt-glow"></div>
+
+            <!-- X close button — top right corner -->
+            <button onclick="dismissInstall()" aria-label="Close"
+                style="position:absolute;top:10px;right:10px;width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.15);cursor:pointer;color:rgba(255,255,255,0.7);display:flex;align-items:center;justify-content:center;font-size:14px;line-height:1;padding:0;flex-shrink:0;">
+                ✕
+            </button>
+
             <!-- App icon -->
             <img src="/icon.svg" alt="KWT News" style="width:52px;height:52px;border-radius:14px;flex-shrink:0;box-shadow:0 4px 18px rgba(0,0,0,0.45),0 0 0 1px rgba(245,166,35,0.2);object-fit:cover;">
+
             <!-- Text -->
-            <div style="flex:1;min-width:0;">
+            <div style="flex:1;min-width:0;padding-right:20px;">
                 <div style="font-weight:800;font-size:14px;color:#ffffff;line-height:1.25;letter-spacing:0.01em;">Install App</div>
                 <div style="font-size:11px;color:rgba(255,255,255,0.5);margin-top:3px;line-height:1.4;">Get instant Kuwait &amp; world news on your home screen</div>
-                <div style="display:flex;align-items:center;gap:6px;margin-top:6px;">
-                    <span style="display:inline-flex;align-items:center;gap:3px;font-size:10px;color:rgba(245,166,35,0.8);font-weight:600;">
-                        <svg width="9" height="9" viewBox="0 0 24 24" fill="#F5A623"><circle cx="12" cy="12" r="12"/></svg> Free
-                    </span>
+                <div style="display:flex;align-items:center;gap:6px;margin-top:6px;flex-wrap:wrap;">
+                    <span style="font-size:10px;color:rgba(245,166,35,0.85);font-weight:600;">✦ Free</span>
                     <span style="color:rgba(255,255,255,0.15);font-size:10px;">•</span>
-                    <span style="font-size:10px;color:rgba(255,255,255,0.35);">Works offline</span>
+                    <span style="font-size:10px;color:rgba(255,255,255,0.4);">Works offline</span>
                     <span style="color:rgba(255,255,255,0.15);font-size:10px;">•</span>
-                    <span style="font-size:10px;color:rgba(255,255,255,0.35);">No app store needed</span>
+                    <span style="font-size:10px;color:rgba(255,255,255,0.4);">No app store</span>
                 </div>
             </div>
-            <!-- Buttons -->
-            <div style="display:flex;flex-direction:column;gap:7px;flex-shrink:0;align-items:center;">
-                <button onclick="installPWA()" style="padding:10px 20px;border-radius:12px;background:linear-gradient(135deg,#F5A623,#e09510);color:#0A1628;font-weight:800;font-size:13px;border:none;cursor:pointer;white-space:nowrap;box-shadow:0 4px 18px rgba(245,166,35,0.45);letter-spacing:0.02em;">
-                    Install
-                </button>
-                <button onclick="dismissInstall()" style="background:transparent;border:none;cursor:pointer;color:rgba(255,255,255,0.35);font-size:11px;padding:2px 8px;white-space:nowrap;">
-                    Not now
-                </button>
-            </div>
+
+            <!-- Install button -->
+            <button onclick="installPWA()" style="padding:11px 20px;border-radius:12px;background:linear-gradient(135deg,#F5A623,#e09510);color:#0A1628;font-weight:800;font-size:13px;border:none;cursor:pointer;white-space:nowrap;box-shadow:0 4px 18px rgba(245,166,35,0.45);letter-spacing:0.02em;flex-shrink:0;">
+                Install
+            </button>
         </div>
     </div>
 
@@ -1092,8 +1094,13 @@
                 merge: true 
             });
         } catch(e) {}
-        // analytics & messaging disabled (require HTTPS + service worker)
-        const messaging = null;
+        // Firebase Messaging — enabled for push notifications
+        let messaging = null;
+        try {
+            messaging = firebase.messaging();
+        } catch(e) {
+            console.log('[KWT] Messaging init skipped:', e.message);
+        }
         
         // Cloudinary Configuration
         const CLOUDINARY_CONFIG = {
@@ -4389,31 +4396,48 @@
                 }
             };
 
-            // Listen for new breaking news from Firestore → fire native notification
+            // Listen for ALL new news from Firestore → fire native notification for every new article
             useEffect(() => {
                 if (notifPermission !== 'granted') return;
+                // Register FCM token so backend can send push to all users
+                if (messaging) {
+                    messaging.getToken({ vapidKey: 'BEl62iUYgUivxIkv69yViEuiBIa-Ib9-SkvMeAtA3LFgDkBWAVe7axcl0bYFdCvD29NBwkk5K2cGjlj' })
+                        .then(token => {
+                            if (token) {
+                                db.collection('fcm_tokens').doc(token).set({
+                                    token,
+                                    updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                                    platform: 'web'
+                                }).catch(() => {});
+                            }
+                        }).catch(() => {});
+                }
+                // Real-time listener — ALL news, newest first, limit 1 → fires on every new article
                 const unsubscribe = db.collection('news')
-                    .where('isBreaking', '==', true)
                     .orderBy('timestamp', 'desc')
                     .limit(1)
                     .onSnapshot((snapshot) => {
                         snapshot.docChanges().forEach((change) => {
                             if (change.type === 'added') {
                                 const article = change.doc.data();
-                                // Only notify if article is fresh (< 2 min old)
+                                if (article.hidden || (article.status && article.status.toLowerCase() === 'inactive')) return;
+                                // Only notify if article is fresh (< 3 min old)
                                 const age = Date.now() - (article.timestamp?.toMillis?.() || 0);
-                                if (age < 120000) {
-                                    new Notification('🚨 Breaking News — KWT News', {
-                                        body: article.title || 'New breaking news alert',
+                                if (age < 180000) {
+                                    const isBreaking = article.isBreaking;
+                                    const title = isBreaking ? '🚨 Breaking — KWT News' : '🗞️ KWT News';
+                                    new Notification(title, {
+                                        body: article.title || 'New news update',
                                         icon: article.imageUrl || '/icon-192.png',
                                         badge: '/icon-192.png',
-                                        tag: 'kwt-breaking-' + change.doc.id,
-                                        requireInteraction: true
+                                        tag: 'kwt-news-' + change.doc.id,
+                                        requireInteraction: isBreaking,
+                                        vibrate: isBreaking ? [200, 100, 200] : [100]
                                     });
                                 }
                             }
                         });
-                    });
+                    }, () => {});
                 return () => unsubscribe();
             }, [notifPermission]);
 
