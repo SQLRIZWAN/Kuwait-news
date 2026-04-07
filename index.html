@@ -2194,6 +2194,136 @@
         };
 
         // ==========================================
+        // STATIC PAGE MODAL (About, Contact, Privacy, Terms)
+        // ==========================================
+        const StaticPageModal = ({ page, onClose }) => {
+            const pages = {
+                about: {
+                    title: 'About Us',
+                    icon: 'ℹ️',
+                    content: (
+                        <div>
+                            <p style={{fontSize:'15px',lineHeight:1.8,marginBottom:'16px'}}>KWT News is Kuwait's trusted real-time news platform. We deliver breaking news, local Kuwait stories, world events, job listings, and lifestyle content — all in one place.</p>
+                            <p style={{fontSize:'15px',lineHeight:1.8,marginBottom:'16px'}}>Our mission is to keep the Kuwait community informed, connected, and empowered with accurate, fast, and multilingual news coverage in 10+ languages.</p>
+                            <p style={{fontSize:'15px',lineHeight:1.8,marginBottom:'16px'}}>Founded in Kuwait, our editorial team works around the clock to bring you the most relevant stories from Kuwait and around the world.</p>
+                            <div style={{background:'rgba(245,166,35,0.08)',border:'1px solid rgba(245,166,35,0.2)',borderRadius:'12px',padding:'16px',marginTop:'20px'}}>
+                                <p style={{fontWeight:700,fontSize:'14px',marginBottom:'8px',color:'#F5A623'}}>🌐 Visit us</p>
+                                <p style={{fontSize:'14px'}}>kwtnews.com</p>
+                                <p style={{fontSize:'14px',marginTop:'4px'}}>📧 kwtnews.com@gmail.com</p>
+                            </div>
+                        </div>
+                    )
+                },
+                contact: {
+                    title: 'Contact Us',
+                    icon: '📬',
+                    content: (
+                        <div>
+                            <p style={{fontSize:'15px',lineHeight:1.8,marginBottom:'20px'}}>We'd love to hear from you! Reach out to us through any of the following channels:</p>
+                            {[
+                                {icon:'📧',label:'Email',value:'kwtnews.com@gmail.com',href:'mailto:kwtnews.com@gmail.com'},
+                                {icon:'✉️',label:'X / Twitter',value:'@kwtnews_com',href:'https://twitter.com/kwtnews_com'},
+                                {icon:'📸',label:'Instagram',value:'@kwtnews_com',href:'https://instagram.com/kwtnews_com'},
+                                {icon:'📢',label:'Telegram',value:'@kwtnews_com',href:'https://t.me/kwtnews_com'},
+                                {icon:'🎵',label:'TikTok',value:'@kwtnews.com',href:'https://tiktok.com/@kwtnews.com'},
+                            ].map(c => (
+                                <a key={c.href} href={c.href} target={c.href.startsWith('mailto') ? undefined : '_blank'} rel="noopener noreferrer"
+                                   style={{display:'flex',alignItems:'center',gap:'14px',padding:'14px',borderRadius:'12px',marginBottom:'8px',textDecoration:'none',background:'rgba(0,0,0,0.03)',border:'1px solid rgba(0,0,0,0.06)'}}
+                                   className="dark:bg-gray-800/40 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                                    <span style={{fontSize:'22px',flexShrink:0}}>{c.icon}</span>
+                                    <div>
+                                        <p style={{fontSize:'12px',color:'#9ca3af',marginBottom:'2px'}}>{c.label}</p>
+                                        <p style={{fontSize:'14px',fontWeight:600}} className="text-gray-800 dark:text-gray-200">{c.value}</p>
+                                    </div>
+                                    <svg style={{marginLeft:'auto',flexShrink:0}} xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400"><polyline points="9 18 15 12 9 6"/></svg>
+                                </a>
+                            ))}
+                            <p style={{fontSize:'13px',color:'#9ca3af',marginTop:'16px',textAlign:'center'}}>For advertising inquiries, please email us at<br/><strong>kwtnews.com@gmail.com</strong></p>
+                        </div>
+                    )
+                },
+                privacy: {
+                    title: 'Privacy Policy',
+                    icon: '🔒',
+                    content: (
+                        <div style={{fontSize:'14px',lineHeight:1.8,color:'inherit'}}>
+                            <p style={{marginBottom:'16px',color:'#9ca3af',fontSize:'12px'}}>Last updated: January 2026</p>
+                            {[
+                                {h:'1. Information We Collect', p:'We collect information you provide when creating an account (name, email, profile photo). We also collect usage data such as articles read, liked posts, and preferences to improve your experience.'},
+                                {h:'2. How We Use Your Information', p:'Your information is used to personalize your news feed, remember your preferences, enable notifications, and improve our services. We do not sell your personal data to third parties.'},
+                                {h:'3. Data Storage', p:'Your data is securely stored using Google Firebase services. We implement appropriate security measures to protect your information against unauthorized access.'},
+                                {h:'4. Cookies & Local Storage', p:'We use browser local storage and session storage to save preferences such as your selected language, theme (dark/light mode), liked posts, and notification settings.'},
+                                {h:'5. Third-Party Services', p:'KWT News uses Firebase (Google) for authentication and database services. We may display third-party advertisements. These services have their own privacy policies.'},
+                                {h:'6. Your Rights', p:'You may request deletion of your account and associated data at any time by contacting us at kwtnews.com@gmail.com. You can also clear local data by clearing your browser cache.'},
+                                {h:'7. Changes to This Policy', p:'We may update this Privacy Policy periodically. Continued use of our service constitutes acceptance of the updated policy.'},
+                                {h:'8. Contact', p:'For privacy-related inquiries, contact us at kwtnews.com@gmail.com.'},
+                            ].map(s => (
+                                <div key={s.h} style={{marginBottom:'18px'}}>
+                                    <p style={{fontWeight:700,fontSize:'14px',marginBottom:'6px'}} className="text-gray-900 dark:text-white">{s.h}</p>
+                                    <p className="text-gray-600 dark:text-gray-400">{s.p}</p>
+                                </div>
+                            ))}
+                        </div>
+                    )
+                },
+                terms: {
+                    title: 'Terms & Conditions',
+                    icon: '📋',
+                    content: (
+                        <div style={{fontSize:'14px',lineHeight:1.8}}>
+                            <p style={{marginBottom:'16px',color:'#9ca3af',fontSize:'12px'}}>Last updated: January 2026</p>
+                            {[
+                                {h:'1. Acceptance of Terms', p:'By accessing and using KWT News, you accept and agree to be bound by these Terms and Conditions. If you do not agree, please do not use our service.'},
+                                {h:'2. Use of Service', p:'KWT News is provided for personal, non-commercial use. You may not reproduce, distribute, or commercially exploit any content without prior written permission.'},
+                                {h:'3. User Accounts', p:'You are responsible for maintaining the confidentiality of your account credentials. You agree to provide accurate information and notify us of any unauthorized use of your account.'},
+                                {h:'4. Content Policy', p:'Users must not post comments that are abusive, defamatory, or illegal. We reserve the right to remove any content and suspend accounts that violate our community standards.'},
+                                {h:'5. Intellectual Property', p:'All content on KWT News, including articles, images, and videos, is protected by copyright. KWT News and its logo are trademarks of kwtnews.com.'},
+                                {h:'6. Disclaimer', p:'News content is provided for informational purposes only. KWT News strives for accuracy but does not guarantee the completeness or reliability of any information.'},
+                                {h:'7. Limitation of Liability', p:'KWT News shall not be liable for any indirect, incidental, or consequential damages arising from use of our service.'},
+                                {h:'8. Changes to Terms', p:'We reserve the right to modify these terms at any time. Continued use of our service after changes constitutes acceptance of the new terms.'},
+                                {h:'9. Contact', p:'Questions about these terms can be sent to kwtnews.com@gmail.com.'},
+                            ].map(s => (
+                                <div key={s.h} style={{marginBottom:'18px'}}>
+                                    <p style={{fontWeight:700,fontSize:'14px',marginBottom:'6px'}} className="text-gray-900 dark:text-white">{s.h}</p>
+                                    <p className="text-gray-600 dark:text-gray-400">{s.p}</p>
+                                </div>
+                            ))}
+                        </div>
+                    )
+                },
+            };
+            const pg = pages[page];
+            if (!pg) return null;
+            return (
+                <div style={{position:'fixed',inset:0,zIndex:600,display:'flex',alignItems:'flex-end',justifyContent:'center'}} onClick={e => { if(e.target===e.currentTarget) onClose(); }}>
+                    <div style={{position:'absolute',inset:0,background:'rgba(0,0,0,0.6)',backdropFilter:'blur(4px)'}} onClick={onClose}/>
+                    <div style={{position:'relative',width:'100%',maxWidth:'600px',maxHeight:'90vh',borderRadius:'22px 22px 0 0',display:'flex',flexDirection:'column',overflow:'hidden',animation:'modalUp 0.28s cubic-bezier(0.25,0.46,0.45,0.94)',zIndex:1}}
+                         className="bg-white dark:bg-gray-900">
+                        {/* Handle */}
+                        <div style={{display:'flex',justifyContent:'center',paddingTop:'10px',flexShrink:0}}>
+                            <div style={{width:'36px',height:'4px',borderRadius:'2px'}} className="bg-gray-200 dark:bg-gray-700"/>
+                        </div>
+                        {/* Header */}
+                        <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'12px 18px 14px',flexShrink:0}} className="border-b border-gray-100 dark:border-gray-800">
+                            <div style={{display:'flex',alignItems:'center',gap:'10px'}}>
+                                <span style={{fontSize:'22px'}}>{pg.icon}</span>
+                                <h2 style={{fontWeight:800,fontSize:'18px',margin:0}} className="text-gray-900 dark:text-white">{pg.title}</h2>
+                            </div>
+                            <button onClick={onClose} style={{width:'36px',height:'36px',borderRadius:'50%',border:'none',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center'}}
+                                    className="bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 transition-colors">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                            </button>
+                        </div>
+                        {/* Content */}
+                        <div style={{overflowY:'auto',flex:1,padding:'20px 18px 32px'}} className="text-gray-700 dark:text-gray-300">
+                            {pg.content}
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // ==========================================
         // HEADER COMPONENT
         // ==========================================
         const Header = ({ activeTab, setActiveTab, searchQuery, setSearchQuery, onReadMore }) => {
@@ -2229,6 +2359,7 @@
             }, []);
 
             const [logoutConfirm, setLogoutConfirm] = useState(false);
+            const [activePage, setActivePage] = useState(null);
 
             const handleLogoutRequest = () => {
                 setLogoutConfirm(true);
@@ -2364,6 +2495,29 @@
                             {/* ── Divider ── */}
                             <div style={{height:'1px',background:'rgba(255,255,255,0.07)',margin:'0 16px'}}/>
 
+                            {/* ── Pages ── */}
+                            <div style={{padding:'12px 16px'}}>
+                                <p style={{fontSize:'10px',fontWeight:700,color:'rgba(255,255,255,0.25)',letterSpacing:'0.1em',textTransform:'uppercase',marginBottom:'6px',paddingLeft:'4px'}}>Pages</p>
+                                {[
+                                    {id:'about',   icon:'ℹ️', label:'About Us'},
+                                    {id:'contact', icon:'📬', label:'Contact Us'},
+                                    {id:'privacy', icon:'🔒', label:'Privacy Policy'},
+                                    {id:'terms',   icon:'📋', label:'Terms & Conditions'},
+                                ].map(pg => (
+                                    <button key={pg.id}
+                                        onClick={() => { setActivePage(pg.id); setDrawerOpen(false); }}
+                                        style={{width:'100%',padding:'9px 10px',borderRadius:'9px',textAlign:'left',fontWeight:400,fontSize:'13px',border:'none',cursor:'pointer',display:'flex',alignItems:'center',gap:'10px',marginBottom:'2px',background:'transparent',color:'rgba(255,255,255,0.72)'}}
+                                        className="hover:bg-white/5 transition-colors">
+                                        <span style={{fontSize:'14px',flexShrink:0,width:'20px',textAlign:'center'}}>{pg.icon}</span>
+                                        <span style={{flex:1}}>{pg.label}</span>
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.3)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                                    </button>
+                                ))}
+                            </div>
+
+                            {/* ── Divider ── */}
+                            <div style={{height:'1px',background:'rgba(255,255,255,0.07)',margin:'0 16px'}}/>
+
                             {/* ── Notification toggle ── */}
                             <div style={{padding:'12px 16px'}}>
                                 <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'10px 12px',background:'rgba(255,255,255,0.04)',borderRadius:'10px'}}>
@@ -2438,9 +2592,9 @@
                                     ))}
                                 </div>
                                 <div style={{display:'flex',gap:'12px',justifyContent:'center',flexWrap:'wrap',marginBottom:'8px'}}>
-                                    <a href="#" style={{fontSize:'10px',color:'rgba(255,255,255,0.25)',textDecoration:'none'}}>{t('contact')}</a>
+                                    <button onClick={() => { setActivePage('contact'); setDrawerOpen(false); }} style={{fontSize:'10px',color:'rgba(255,255,255,0.25)',background:'none',border:'none',cursor:'pointer',padding:0}}>{t('contact')}</button>
                                     <span style={{color:'rgba(255,255,255,0.15)',fontSize:'10px'}}>·</span>
-                                    <a href="#" style={{fontSize:'10px',color:'rgba(255,255,255,0.25)',textDecoration:'none'}}>{t('privacy')}</a>
+                                    <button onClick={() => { setActivePage('privacy'); setDrawerOpen(false); }} style={{fontSize:'10px',color:'rgba(255,255,255,0.25)',background:'none',border:'none',cursor:'pointer',padding:0}}>{t('privacy')}</button>
                                     <span style={{color:'rgba(255,255,255,0.15)',fontSize:'10px'}}>·</span>
                                     <a href="mailto:kwtnews.com@gmail.com" style={{fontSize:'10px',color:'rgba(255,255,255,0.25)',textDecoration:'none'}}>Report</a>
                                 </div>
@@ -2479,6 +2633,9 @@
                         onSelectNews={(item) => { setSearchOpen(false); onReadMore && onReadMore(item); }}
                     />
                 )}
+
+                {/* ── STATIC PAGE MODAL ── */}
+                {activePage && <StaticPageModal page={activePage} onClose={() => setActivePage(null)} />}
 
                 {/* ── MAIN HEADER ── */}
                 <header style={{position:'sticky',top:0,zIndex:40,background:'#0A1628',boxShadow:'0 2px 10px rgba(0,0,0,0.1)'}}>
@@ -2830,12 +2987,34 @@
             );
         };
         
+        // Lazy-load video src when it enters the viewport
+        const useLazyVideoSrc = (src) => {
+            const [activeSrc, setActiveSrc] = useState(null);
+            const ref = useRef(null);
+            useEffect(() => {
+                if (!src) return;
+                const el = ref.current;
+                if (!el) return;
+                const observer = new IntersectionObserver(
+                    ([entry]) => { if (entry.isIntersecting) { setActiveSrc(src); observer.disconnect(); } },
+                    { rootMargin: '200px' }
+                );
+                observer.observe(el);
+                return () => observer.disconnect();
+            }, [src]);
+            return [activeSrc, ref];
+        };
+
         // News Card Component
         const NewsCard = ({ news, index, onReadMore, likedPosts = [], savedPosts = [], onLikeToggle, onSaveToggle }) => {
             const { t } = useTranslation();
             const { user, loading: authLoading } = useAuth(); // FIX: track auth loading separately
             const { addNotification } = useNotifications();
-            const isLiked = likedPosts.includes(news.id);
+            // Anonymous like state — persisted in localStorage for non-logged-in users
+            const [anonLikedPosts, setAnonLikedPosts] = useState(() => {
+                try { return JSON.parse(localStorage.getItem('kwtAnonLikedPosts') || '[]'); } catch(e) { return []; }
+            });
+            const isLiked = user ? likedPosts.includes(news.id) : anonLikedPosts.includes(news.id);
             const isSaved = savedPosts.includes(news.id);
             const [showCommentModal, setShowCommentModal] = useState(false);
             const [shareMenuOpen, setShareMenuOpen] = useState(false);
@@ -2862,14 +3041,17 @@
             const [commentCount, setCommentCount] = useState(news.commentCount || 0);
             const likePendingRef = useRef(false); // Prevents duplicate like calls
             
-            // Increment views once on mount (debounced 3s)
+            // Increment views once per session (debounced 3s, sessionStorage guard)
             useEffect(() => {
                 const timer = setTimeout(async () => {
                     try {
+                        const viewedKey = 'kwtViewedPosts';
+                        const viewed = JSON.parse(sessionStorage.getItem(viewedKey) || '[]');
+                        if (viewed.includes(news.id)) return; // Already counted this session
                         await db.collection('news').doc(news.id).update({
                             views: firebase.firestore.FieldValue.increment(1)
                         });
-                        setViews(prev => prev + 1);
+                        sessionStorage.setItem(viewedKey, JSON.stringify([...viewed, news.id]));
                     } catch (e) {}
                 }, 3000);
                 return () => clearTimeout(timer);
@@ -2889,28 +3071,37 @@
             }, [news.id]);
             
             const handleLike = async () => {
-                if (!user) { addNotification({ message: t('loginToLike'), type: 'info' }); return; }
                 if (likePendingRef.current) return; // Prevent double-tap
                 likePendingRef.current = true;
-                // FIX 2+26: Optimistic update first, rollback on error
                 const wasLiked = isLiked;
                 const prevLikes = likes;
-                onLikeToggle && onLikeToggle(news.id, !isLiked);
                 setLikes(p => wasLiked ? Math.max(0, p - 1) : p + 1);
                 try {
                     const newsRef = db.collection('news').doc(news.id);
-                    const userRef = db.collection('users').doc(user.uid);
-                    if (wasLiked) {
-                        await newsRef.update({ likes: firebase.firestore.FieldValue.increment(-1) });
-                        await userRef.update({ likedPosts: firebase.firestore.FieldValue.arrayRemove(news.id) });
+                    if (user) {
+                        // Logged-in: use Firebase user doc
+                        onLikeToggle && onLikeToggle(news.id, !isLiked);
+                        const userRef = db.collection('users').doc(user.uid);
+                        if (wasLiked) {
+                            await newsRef.update({ likes: firebase.firestore.FieldValue.increment(-1) });
+                            await userRef.update({ likedPosts: firebase.firestore.FieldValue.arrayRemove(news.id) });
+                        } else {
+                            await newsRef.update({ likes: firebase.firestore.FieldValue.increment(1) });
+                            await userRef.update({ likedPosts: firebase.firestore.FieldValue.arrayUnion(news.id) });
+                        }
                     } else {
-                        await newsRef.update({ likes: firebase.firestore.FieldValue.increment(1) });
-                        await userRef.update({ likedPosts: firebase.firestore.FieldValue.arrayUnion(news.id) });
+                        // Anonymous: use localStorage
+                        const updated = wasLiked
+                            ? anonLikedPosts.filter(id => id !== news.id)
+                            : [...anonLikedPosts, news.id];
+                        setAnonLikedPosts(updated);
+                        try { localStorage.setItem('kwtAnonLikedPosts', JSON.stringify(updated)); } catch(e) {}
+                        await newsRef.update({ likes: firebase.firestore.FieldValue.increment(wasLiked ? -1 : 1) });
                     }
                 } catch (error) {
-                    // Rollback on failure
                     console.error('Like error:', error);
-                    onLikeToggle && onLikeToggle(news.id, wasLiked);
+                    if (user) onLikeToggle && onLikeToggle(news.id, wasLiked);
+                    else setAnonLikedPosts(anonLikedPosts); // rollback
                     setLikes(prevLikes);
                 }
                 finally { likePendingRef.current = false; }
@@ -2939,7 +3130,8 @@
             
             const handleShare = async (platform) => {
                 const shareUrl = `${window.location.origin}${window.location.pathname}#news-${news.id}`;
-                const shareText = `📰 ${news.title}\n\n${news.summary?.substring(0, 120)}...\n\n🔗 ${shareUrl}\nVia: KWT News — kwtnews.com`;
+                const mediaUrl = news.videoUrl || news.imageUrl || '';
+                const shareText = `📰 ${news.title}\n\n${news.summary?.substring(0, 120)}...\n${mediaUrl ? `\n🖼️ ${mediaUrl}\n` : ''}\n🔗 ${shareUrl}\nVia: KWT News — kwtnews.com`;
                 
                 // Try native share first (mobile)
                 if (platform === 'native' && navigator.share) {
@@ -2977,9 +3169,11 @@
             };
             
             const totalEngagement = views + likes + commentCount;
-            
+
             // Check if video
             const isVideo = news.mediaType === 'video' || news.imageUrl?.includes('video');
+            // Lazy-load video src
+            const [lazyVideoSrc, videoContainerRef] = useLazyVideoSrc(isVideo ? news.imageUrl : null);
             
             return (
             <React.Fragment>
@@ -2989,19 +3183,21 @@
                 >
                     {/* FIX 1: onClick only on media+title — not on engagement bar to prevent mis-clicks */}
                     {/* Media — 16:9 aspect ratio */}
-                    <div className="relative overflow-hidden" style={{aspectRatio:'16/9',background:'#e5e7eb',cursor:'pointer'}}
+                    <div ref={videoContainerRef} className="relative overflow-hidden" style={{aspectRatio:'16/9',background:'#e5e7eb',cursor:'pointer'}}
                         onClick={() => onReadMore && onReadMore(news)}>
                         {isVideo ? (
-                            <video 
-                                src={news.imageUrl} 
-                                controls 
+                            <video
+                                src={lazyVideoSrc || undefined}
+                                controls
                                 className="w-full h-full object-cover"
-                                poster={news.thumbnail}
+                                poster={news.thumbnail || news.imageUrl}
                                 preload="none"
+                                onClick={(e) => e.stopPropagation()}
+                                onPlay={(e) => e.stopPropagation()}
                             />
                         ) : (
-                            <img 
-                                src={news.imageUrl || 'https://placehold.co/800x450/0A1628/F5A623?text=KWT+News'} 
+                            <img
+                                src={news.imageUrl || 'https://placehold.co/800x450/0A1628/F5A623?text=KWT+News'}
                                 alt={news.title}
                                 className="w-full h-full object-cover hover:scale-105 transition-transform duration-700"
                                 loading="lazy"
@@ -3124,16 +3320,16 @@
                                             {/* Share options grid */}
                                             <div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:'4px',padding:'16px 12px'}}>
                                                 {[
-                                                    {p:'whatsapp',bg:'#25D366',icon:'📱',label:'WhatsApp'},
-                                                    {p:'facebook',bg:'#1877F2',icon:'📘',label:'Facebook'},
-                                                    {p:'twitter', bg:'#000000',icon:'𝕏',label:'X (Twitter)'},
-                                                    {p:'telegram',bg:'#0088cc',icon:'✈️',label:'Telegram'},
-                                                    {p:'copy',    bg:'#6366f1',icon:'🔗',label: t('copyLink')},
+                                                    {p:'whatsapp',bg:'#25D366',label:'WhatsApp',icon:<svg viewBox="0 0 24 24" width="24" height="24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M11.993 0C5.366 0 0 5.373 0 12.008c0 2.117.554 4.102 1.522 5.831L0 24l6.335-1.652C8.01 23.342 9.96 24 12 24c6.627 0 12-5.373 12-11.992C24 5.376 18.627.001 11.993 0zm.007 22c-1.846 0-3.655-.5-5.23-1.44l-.374-.223-3.884 1.012 1.042-3.782-.246-.393A9.934 9.934 0 0 1 2 12.008C2 6.481 6.477 2 11.993 2 17.52 2 22 6.482 22 12.008 22 17.532 17.522 22 11.993 22z"/></svg>},
+                                                    {p:'facebook',bg:'#1877F2',label:'Facebook',icon:<svg viewBox="0 0 24 24" width="24" height="24" fill="white"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>},
+                                                    {p:'twitter', bg:'#000000',label:'X (Twitter)',icon:<svg viewBox="0 0 24 24" width="24" height="24" fill="white"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>},
+                                                    {p:'telegram',bg:'#0088cc',label:'Telegram',icon:<svg viewBox="0 0 24 24" width="24" height="24" fill="white"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>},
+                                                    {p:'copy',    bg:'#6366f1',label: t('copyLink'),icon:<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>},
                                                 ].map(s => (
                                                     <button key={s.p} onClick={() => handleShare(s.p)}
                                                         style={{display:'flex',flexDirection:'column',alignItems:'center',gap:'6px',padding:'12px 6px',borderRadius:'14px',border:'none',cursor:'pointer',background:'transparent'}}
                                                         className="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
-                                                        <div style={{width:'50px',height:'50px',borderRadius:'14px',background:s.bg,display:'flex',alignItems:'center',justifyContent:'center',fontSize:'22px'}}>
+                                                        <div style={{width:'50px',height:'50px',borderRadius:'14px',background:s.bg,display:'flex',alignItems:'center',justifyContent:'center'}}>
                                                             {s.icon}
                                                         </div>
                                                         <span style={{fontSize:'11px',fontWeight:500,color:'#374151',textAlign:'center',lineHeight:1.2}} className="dark:text-gray-300">{s.label}</span>
@@ -3143,7 +3339,9 @@
                                                     <button onClick={() => handleShare('native')}
                                                         style={{display:'flex',flexDirection:'column',alignItems:'center',gap:'6px',padding:'12px 6px',borderRadius:'14px',border:'none',cursor:'pointer',background:'transparent'}}
                                                         className="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
-                                                        <div style={{width:'50px',height:'50px',borderRadius:'14px',background:'#F5A623',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'22px'}}>📤</div>
+                                                        <div style={{width:'50px',height:'50px',borderRadius:'14px',background:'#F5A623',display:'flex',alignItems:'center',justifyContent:'center'}}>
+                                                            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#0A1628" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+                                                        </div>
                                                         <span style={{fontSize:'11px',fontWeight:500,color:'#374151',textAlign:'center',lineHeight:1.2}} className="dark:text-gray-300">More</span>
                                                     </button>
                                                 )}
@@ -3192,7 +3390,12 @@
             const { t } = useTranslation();
             const { user, loading: authLoading } = useAuth(); // FIX: track auth loading
             const { addNotification } = useNotifications();
-            const [isLiked, setIsLiked] = useState(false);
+            // Anonymous like state for detail modal
+            const [anonLikedPosts, setAnonLikedPosts] = useState(() => {
+                try { return JSON.parse(localStorage.getItem('kwtAnonLikedPosts') || '[]'); } catch(e) { return []; }
+            });
+            const [isLikedUser, setIsLikedUser] = useState(false);
+            const isLiked = user ? isLikedUser : anonLikedPosts.includes(news.id);
             const [isSaved, setIsSaved] = useState(false);
             const [likes,   setLikes]   = useState(news.likes || 0);
             const [shareOpen, setShareOpen] = useState(false);
@@ -3236,19 +3439,14 @@
                 const unsub = db.collection('users').doc(user.uid).onSnapshot(snap => {
                     if (snap.exists) {
                         const d = snap.data();
-                        setIsLiked((d.likedPosts || []).includes(news.id));
+                        setIsLikedUser((d.likedPosts || []).includes(news.id));
                         setIsSaved((d.savedPosts || []).includes(news.id));
                     }
                 }, () => {});
                 return () => unsub();
             }, [user?.uid, news.id]);
 
-            useEffect(() => {
-                const tid = setTimeout(() => {
-                    db.collection('news').doc(news.id).update({ views: firebase.firestore.FieldValue.increment(1) }).catch(()=>{});
-                }, 2000);
-                return () => clearTimeout(tid);
-            }, [news.id]);
+            // Views are counted by NewsCard (sessionStorage guard); no double-count here
 
             // FIX 27: Real-time listener so likes/commentCount update while modal is open
             useEffect(() => {
@@ -3265,27 +3463,36 @@
             const likePendingRef = useRef(false);
 
             const handleLike = async () => {
-                if (!user) { addNotification({ message: t('loginToLike'), type: 'info' }); return; }
                 if (likePendingRef.current) return;
                 likePendingRef.current = true;
-                // FIX 2+26: Optimistic update with rollback
                 const wasLiked = isLiked;
                 const prevLikes = likes;
-                setIsLiked(p => !p);
                 setLikes(p => wasLiked ? Math.max(0, p - 1) : p + 1);
                 const nr = db.collection('news').doc(news.id);
-                const ur = db.collection('users').doc(user.uid);
                 try {
-                    if (wasLiked) {
-                        await nr.update({ likes: firebase.firestore.FieldValue.increment(-1) });
-                        await ur.update({ likedPosts: firebase.firestore.FieldValue.arrayRemove(news.id) });
+                    if (user) {
+                        setIsLikedUser(p => !p);
+                        const ur = db.collection('users').doc(user.uid);
+                        if (wasLiked) {
+                            await nr.update({ likes: firebase.firestore.FieldValue.increment(-1) });
+                            await ur.update({ likedPosts: firebase.firestore.FieldValue.arrayRemove(news.id) });
+                        } else {
+                            await nr.update({ likes: firebase.firestore.FieldValue.increment(1) });
+                            await ur.update({ likedPosts: firebase.firestore.FieldValue.arrayUnion(news.id) });
+                        }
                     } else {
-                        await nr.update({ likes: firebase.firestore.FieldValue.increment(1) });
-                        await ur.update({ likedPosts: firebase.firestore.FieldValue.arrayUnion(news.id) });
+                        // Anonymous like — localStorage
+                        const updated = wasLiked
+                            ? anonLikedPosts.filter(id => id !== news.id)
+                            : [...anonLikedPosts, news.id];
+                        setAnonLikedPosts(updated);
+                        try { localStorage.setItem('kwtAnonLikedPosts', JSON.stringify(updated)); } catch(e) {}
+                        await nr.update({ likes: firebase.firestore.FieldValue.increment(wasLiked ? -1 : 1) });
                     }
                 } catch(e) {
                     console.error('Like error:', e);
-                    setIsLiked(wasLiked);
+                    if (user) setIsLikedUser(wasLiked);
+                    else setAnonLikedPosts(anonLikedPosts);
                     setLikes(prevLikes);
                 }
                 finally { likePendingRef.current = false; }
@@ -3304,7 +3511,8 @@
 
             const doShare = async (platform) => {
                 const url  = `${window.location.origin}${window.location.pathname}#news-${news.id}`;
-                const text = `📰 ${news.title}\n\n🔗 ${url}\nVia KWT News — kwtnews.com`;
+                const mediaUrl = news.videoUrl || news.imageUrl || '';
+                const text = `📰 ${news.title}\n\n${news.summary?.substring(0,120)}...\n${mediaUrl ? `\n🖼️ ${mediaUrl}\n` : ''}\n🔗 ${url}\nVia KWT News — kwtnews.com`;
                 if (platform === 'whatsapp')  window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank', 'noopener');
                 if (platform === 'facebook')  window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, '_blank', 'noopener');
                 if (platform === 'twitter')   window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`, '_blank', 'noopener');
@@ -3414,16 +3622,16 @@
                                             </div>
                                             <div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:'4px',padding:'14px 12px'}}>
                                                 {[
-                                                    {p:'whatsapp',bg:'#25D366',icon:'📱',label:'WhatsApp'},
-                                                    {p:'facebook',bg:'#1877F2',icon:'📘',label:'Facebook'},
-                                                    {p:'twitter', bg:'#000',icon:'𝕏',label:'X'},
-                                                    {p:'telegram',bg:'#0088cc',icon:'✈️',label:'Telegram'},
-                                                    {p:'copy',bg:'#6366f1',icon:'🔗',label:'Copy Link'},
+                                                    {p:'whatsapp',bg:'#25D366',label:'WhatsApp',icon:<svg viewBox="0 0 24 24" width="22" height="22" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M11.993 0C5.366 0 0 5.373 0 12.008c0 2.117.554 4.102 1.522 5.831L0 24l6.335-1.652C8.01 23.342 9.96 24 12 24c6.627 0 12-5.373 12-11.992C24 5.376 18.627.001 11.993 0zm.007 22c-1.846 0-3.655-.5-5.23-1.44l-.374-.223-3.884 1.012 1.042-3.782-.246-.393A9.934 9.934 0 0 1 2 12.008C2 6.481 6.477 2 11.993 2 17.52 2 22 6.482 22 12.008 22 17.532 17.522 22 11.993 22z"/></svg>},
+                                                    {p:'facebook',bg:'#1877F2',label:'Facebook',icon:<svg viewBox="0 0 24 24" width="22" height="22" fill="white"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>},
+                                                    {p:'twitter', bg:'#000000',label:'X (Twitter)',icon:<svg viewBox="0 0 24 24" width="22" height="22" fill="white"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>},
+                                                    {p:'telegram',bg:'#0088cc',label:'Telegram',icon:<svg viewBox="0 0 24 24" width="22" height="22" fill="white"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>},
+                                                    {p:'copy',    bg:'#6366f1',label:'Copy Link',icon:<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>},
                                                 ].map(s => (
                                                     <button key={s.p} onClick={() => { doShare(s.p); }}
                                                         style={{display:'flex',flexDirection:'column',alignItems:'center',gap:'6px',padding:'10px 4px',borderRadius:'14px',border:'none',cursor:'pointer',background:'transparent'}}
                                                         className="hover:bg-gray-50 dark:hover:bg-gray-800">
-                                                        <div style={{width:'48px',height:'48px',borderRadius:'14px',background:s.bg,display:'flex',alignItems:'center',justifyContent:'center',fontSize:'20px'}}>{s.icon}</div>
+                                                        <div style={{width:'48px',height:'48px',borderRadius:'14px',background:s.bg,display:'flex',alignItems:'center',justifyContent:'center'}}>{s.icon}</div>
                                                         <span style={{fontSize:'10px',fontWeight:500,color:'#374151',textAlign:'center'}} className="dark:text-gray-300">{s.label}</span>
                                                     </button>
                                                 ))}
@@ -4064,6 +4272,28 @@
             );
         };
         
+        const FooterPageLinks = () => {
+            const { t } = useTranslation();
+            const [activePage, setActivePage] = useState(null);
+            return (
+                <>
+                    <div style={{display:'flex',justifyContent:'center',gap:'20px',flexWrap:'wrap',marginBottom:'20px'}}>
+                        {[
+                            {label: t('aboutUs'),  id:'about'},
+                            {label: t('contact'),  id:'contact'},
+                            {label: t('privacy'),  id:'privacy'},
+                            {label: t('terms'),    id:'terms'},
+                        ].map(link => (
+                            <button key={link.id} onClick={() => setActivePage(link.id)}
+                                style={{fontSize:'12px',color:'rgba(255,255,255,0.4)',textDecoration:'none',transition:'color 0.2s',letterSpacing:'0.02em',background:'none',border:'none',cursor:'pointer',padding:0}}
+                                className="hover:text-accent">{link.label}</button>
+                        ))}
+                    </div>
+                    {activePage && <StaticPageModal page={activePage} onClose={() => setActivePage(null)} />}
+                </>
+            );
+        };
+
         const Footer = () => {
             const { t } = useTranslation();
             
@@ -4146,16 +4376,7 @@
                             </div>
                             
                             {/* Links Row */}
-                            <div style={{display:'flex',justifyContent:'center',gap:'20px',flexWrap:'wrap',marginBottom:'20px'}}>
-                                {[
-                                    {label: t('aboutUs'), href:'#'},
-                                    {label: t('contact'), href:'mailto:kwtnews.com@gmail.com'},
-                                    {label: t('privacy'), href:'#'},
-                                    {label: t('terms'), href:'#'}
-                                ].map((link,i) => (
-                                    <a key={i} href={link.href} style={{fontSize:'12px',color:'rgba(255,255,255,0.4)',textDecoration:'none',transition:'color 0.2s',letterSpacing:'0.02em'}} className="hover:text-accent">{link.label}</a>
-                                ))}
-                            </div>
+                            <FooterPageLinks />
                             
                             {/* Divider */}
                             <div style={{borderTop:'1px solid rgba(255,255,255,0.06)',paddingTop:'12px',textAlign:'center'}}>
