@@ -2297,7 +2297,7 @@
             return (
                 <div style={{position:'fixed',inset:0,zIndex:600,display:'flex',alignItems:'flex-end',justifyContent:'center'}} onClick={e => { if(e.target===e.currentTarget) onClose(); }}>
                     <div style={{position:'absolute',inset:0,background:'rgba(0,0,0,0.6)',backdropFilter:'blur(4px)'}} onClick={onClose}/>
-                    <div style={{position:'relative',width:'100%',maxWidth:'600px',maxHeight:'90vh',borderRadius:'22px 22px 0 0',display:'flex',flexDirection:'column',overflow:'hidden',animation:'modalUp 0.28s cubic-bezier(0.25,0.46,0.45,0.94)',zIndex:1}}
+                    <div style={{position:'relative',width:'100%',maxWidth:'600px',minHeight:'80vh',maxHeight:'92vh',borderRadius:'22px 22px 0 0',display:'flex',flexDirection:'column',overflow:'hidden',animation:'modalUp 0.28s cubic-bezier(0.25,0.46,0.45,0.94)',zIndex:1}}
                          className="bg-white dark:bg-gray-900">
                         {/* Handle */}
                         <div style={{display:'flex',justifyContent:'center',paddingTop:'10px',flexShrink:0}}>
@@ -2497,7 +2497,6 @@
 
                             {/* ── Pages ── */}
                             <div style={{padding:'12px 16px'}}>
-                                <p style={{fontSize:'10px',fontWeight:700,color:'rgba(255,255,255,0.25)',letterSpacing:'0.1em',textTransform:'uppercase',marginBottom:'6px',paddingLeft:'4px'}}>Pages</p>
                                 {[
                                     {id:'about',   icon:'ℹ️', label:'About Us'},
                                     {id:'contact', icon:'📬', label:'Contact Us'},
@@ -3171,9 +3170,9 @@
             const totalEngagement = views + likes + commentCount;
 
             // Check if video
-            const isVideo = news.mediaType === 'video' || news.imageUrl?.includes('video');
+            const isVideo = news.mediaType === 'video' || !!news.videoUrl || !!(news.imageUrl?.match(/\.(mp4|webm|ogg)(\?|$)/i));
             // Lazy-load video src
-            const [lazyVideoSrc, videoContainerRef] = useLazyVideoSrc(isVideo ? news.imageUrl : null);
+            const [lazyVideoSrc, videoContainerRef] = useLazyVideoSrc(isVideo ? (news.videoUrl || news.imageUrl) : null);
             
             return (
             <React.Fragment>
@@ -3190,7 +3189,7 @@
                                 src={lazyVideoSrc || undefined}
                                 controls
                                 className="w-full h-full object-cover"
-                                poster={news.thumbnail || news.imageUrl}
+                                poster={news.thumbnail || news.thumbnailUrl || ''}
                                 preload="none"
                                 onClick={(e) => e.stopPropagation()}
                                 onPlay={(e) => e.stopPropagation()}
