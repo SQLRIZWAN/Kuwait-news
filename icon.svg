@@ -1,110 +1,45 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 580">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="100%" height="100%">
   <defs>
-    <!-- Light blue-gray background gradient -->
-    <radialGradient id="bgGrad" cx="55%" cy="30%" r="70%">
-      <stop offset="0%"   stop-color="#f2f6fa"/>
-      <stop offset="60%"  stop-color="#e6eef5"/>
-      <stop offset="100%" stop-color="#d8e6ef"/>
-    </radialGradient>
-    <!-- Tower navy-blue gradient -->
-    <linearGradient id="towerGrad" x1="10%" y1="0%" x2="90%" y2="100%">
-      <stop offset="0%"   stop-color="#0b2d55"/>
-      <stop offset="50%"  stop-color="#0f3d72"/>
-      <stop offset="100%" stop-color="#1a5c95"/>
+    <linearGradient id="logo-grad" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#0f3459"/>
+      <stop offset="50%" stop-color="#1b6b66"/>
+      <stop offset="100%" stop-color="#2ea64e"/>
     </linearGradient>
-    <!-- Green gradient for WiFi + Globe -->
-    <linearGradient id="greenGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%"   stop-color="#0d7038"/>
-      <stop offset="100%" stop-color="#1db954"/>
-    </linearGradient>
-    <!-- Globe fill gradient — subtle green tint -->
-    <radialGradient id="globeFill" cx="40%" cy="35%" r="65%">
-      <stop offset="0%"   stop-color="#e8f7ee"/>
-      <stop offset="100%" stop-color="#d0f0da"/>
-    </radialGradient>
+    
+    <clipPath id="globe-clip">
+      <circle cx="195" cy="170" r="35" />
+    </clipPath>
   </defs>
 
-  <!-- ── BACKGROUND ── -->
-  <rect width="500" height="580" fill="url(#bgGrad)"/>
+  <g stroke="url(#logo-grad)">
+    <g clip-path="url(#globe-clip)" fill="none" stroke-width="2.5">
+      <line x1="195" y1="130" x2="195" y2="210" />
+      <ellipse cx="195" cy="170" rx="12" ry="35" />
+      <ellipse cx="195" cy="170" rx="24" ry="35" />
+      <line x1="150" y1="170" x2="240" y2="170" />
+      <ellipse cx="195" cy="170" rx="35" ry="12" />
+      <ellipse cx="195" cy="170" rx="35" ry="24" />
+    </g>
+    <circle cx="195" cy="170" r="35" fill="none" stroke-width="3"/>
+  </g>
 
-  <!-- ── GROUND ARC ── -->
-  <ellipse cx="205" cy="422" rx="140" ry="11" fill="url(#towerGrad)" opacity="0.9"/>
+  <g fill="none" stroke="url(#logo-grad)" stroke-width="8" stroke-linecap="round">
+    <path d="M 180,110 A 35,35 0 0,1 210,90" />
+    <path d="M 180,85 A 60,60 0 0,1 230,65" />
+    <path d="M 180,60 A 85,85 0 0,1 250,40" />
+  </g>
+  <circle cx="170" cy="130" r="5" fill="url(#logo-grad)" />
 
-  <!-- ═══════════════════════════════════════════
-       TOWER 1 — Far-left thin spire (no sphere)
-  ═══════════════════════════════════════════ -->
-  <!-- Shaft -->
-  <rect x="104" y="330" width="11" height="93" rx="2" fill="url(#towerGrad)"/>
-  <!-- Spire -->
-  <polygon points="109.5,158  115,332  104,332" fill="url(#towerGrad)"/>
+  <path d="M 85,115 L 88,155 C 96,157 96,167 88,170 L 86,209 L 84,209 L 82,170 C 74,167 74,157 82,155 Z" fill="url(#logo-grad)"/>
 
-  <!-- ═══════════════════════════════════════════
-       TOWER 2 — Main Kuwait Tower (tallest, large sphere)
-  ═══════════════════════════════════════════ -->
-  <!-- Lower shaft -->
-  <rect x="168" y="342" width="17" height="80" rx="2" fill="url(#towerGrad)"/>
-  <!-- Wide disc / platform ring -->
-  <rect x="158" y="333" width="37" height="11" rx="3" fill="url(#towerGrad)"/>
-  <!-- Large sphere -->
-  <circle cx="176" cy="298" r="36" fill="url(#towerGrad)"/>
-  <!-- Neck -->
-  <rect x="172" y="262" width="8" height="36" fill="url(#towerGrad)"/>
-  <!-- Spire above neck -->
-  <polygon points="176,138  181,264  171,264" fill="url(#towerGrad)"/>
+  <polygon points="115,100 118,209 112,209" fill="url(#logo-grad)"/>
 
-  <!-- ═══════════════════════════════════════════
-       TOWER 3 — Second Kuwait Tower (medium sphere)
-  ═══════════════════════════════════════════ -->
-  <!-- Lower shaft -->
-  <rect x="217" y="348" width="14" height="74" rx="2" fill="url(#towerGrad)"/>
-  <!-- Disc platform -->
-  <rect x="210" y="340" width="28" height="10" rx="2" fill="url(#towerGrad)"/>
-  <!-- Medium sphere -->
-  <circle cx="224" cy="311" r="27" fill="url(#towerGrad)"/>
-  <!-- Neck -->
-  <rect x="220" y="284" width="8" height="27" fill="url(#towerGrad)"/>
-  <!-- Spire -->
-  <polygon points="224,168  229,286  219,286" fill="url(#towerGrad)"/>
+  <polygon points="150,75 152,130 148,130" fill="url(#logo-grad)"/>
+  <ellipse cx="150" cy="133" rx="8" ry="4" fill="url(#logo-grad)"/>
+  <rect x="147" y="137" width="6" height="13" fill="url(#logo-grad)"/>
+  <ellipse cx="150" cy="155" rx="20" ry="12" fill="url(#logo-grad)"/>
+  <polygon points="144,166 156,166 160,209 140,209" fill="url(#logo-grad)"/>
 
-  <!-- ═══════════════════════════════════════════
-       WIFI SIGNAL — upper right
-  ═══════════════════════════════════════════ -->
-  <!-- Center dot -->
-  <circle cx="302" cy="214" r="10" fill="url(#greenGrad)"/>
-  <!-- Arc 1 — inner -->
-  <path d="M278,189 A34,34 0 0 1 326,189"
-        fill="none" stroke="url(#greenGrad)" stroke-width="14" stroke-linecap="round"/>
-  <!-- Arc 2 — middle -->
-  <path d="M258,169 A56,56 0 0 1 346,169"
-        fill="none" stroke="url(#greenGrad)" stroke-width="13" stroke-linecap="round"/>
-  <!-- Arc 3 — outer -->
-  <path d="M240,150 A76,76 0 0 1 364,150"
-        fill="none" stroke="url(#greenGrad)" stroke-width="11" stroke-linecap="round" opacity="0.80"/>
+  <path d="M 60,210 Q 150,200 240,210 Q 150,204 60,210 Z" fill="url(#logo-grad)"/>
 
-  <!-- ═══════════════════════════════════════════
-       GLOBE — lower right, more prominent
-  ═══════════════════════════════════════════ -->
-  <!-- Filled background circle -->
-  <circle cx="358" cy="335" r="72" fill="url(#globeFill)"/>
-  <!-- Main circle border -->
-  <circle cx="358" cy="335" r="72"
-          fill="none" stroke="url(#greenGrad)" stroke-width="8"/>
-  <!-- Vertical axis line -->
-  <line x1="358" y1="263" x2="358" y2="407"
-        stroke="url(#greenGrad)" stroke-width="5" opacity="0.85"/>
-  <!-- Equator -->
-  <line x1="286" y1="335" x2="430" y2="335"
-        stroke="url(#greenGrad)" stroke-width="5" opacity="0.85"/>
-  <!-- Upper latitude -->
-  <line x1="298" y1="299" x2="418" y2="299"
-        stroke="url(#greenGrad)" stroke-width="3.5" opacity="0.70"/>
-  <!-- Lower latitude -->
-  <line x1="298" y1="371" x2="418" y2="371"
-        stroke="url(#greenGrad)" stroke-width="3.5" opacity="0.70"/>
-  <!-- Left longitude curve -->
-  <path d="M338,264 Q316,335 338,406"
-        fill="none" stroke="url(#greenGrad)" stroke-width="4" opacity="0.75"/>
-  <!-- Right longitude curve -->
-  <path d="M378,264 Q400,335 378,406"
-        fill="none" stroke="url(#greenGrad)" stroke-width="4" opacity="0.75"/>
 </svg>
