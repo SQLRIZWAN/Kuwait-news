@@ -2762,43 +2762,61 @@
                 </>
             );
         };
-        
+
         // Login Modal Component
         const LoginModal = ({ onClose }) => {
-            const { t } = useTranslation();
             const { loginWithEmail, registerWithEmail } = useAuth();
-            const [mode, setMode] = useState('login'); // 'login' | 'register' | 'forgot'
-            const [name,           setName]           = useState('');
-            const [email,          setEmail]          = useState('');
-            const [phone,          setPhone]          = useState('');
-            const [password,       setPassword]       = useState('');
-            const [confirmPass,    setConfirmPass]    = useState('');
-            const [usePhone,       setUsePhone]       = useState(false);
-            const [error,          setError]          = useState('');
-            const [successMsg,     setSuccessMsg]     = useState('');
-            const [loading,        setLoading]        = useState('');
-            const [showPass,       setShowPass]       = useState(false);
-            const [showConfirm,    setShowConfirm]    = useState(false);
+            const [mode, setMode]           = useState('login'); // 'login' | 'register' | 'forgot'
+            const [name, setName]           = useState('');
+            const [email, setEmail]         = useState('');
+            const [password, setPassword]   = useState('');
+            const [confirmPass, setConfirm] = useState('');
+            const [error, setError]         = useState('');
+            const [successMsg, setSuccess]  = useState('');
+            const [loading, setLoading]     = useState(false);
+            const [showPass, setShowPass]   = useState(false);
+            const [showConf, setShowConf]   = useState(false);
 
-            const reset = () => { setError(''); setSuccessMsg(''); };
+            const clearState = () => { setError(''); setSuccess(''); };
+            const switchMode = (m) => { setMode(m); clearState(); setPassword(''); setConfirm(''); };
+
+            // Friendly Firebase error messages
+            const friendlyError = (code) => {
+                const map = {
+                    'auth/user-not-found':       'No account found with this email.',
+                    'auth/wrong-password':        'Incorrect password. Please try again.',
+                    'auth/invalid-credential':    'Invalid email or password.',
+                    'auth/email-already-in-use':  'This email is already registered. Please login.',
+                    'auth/weak-password':         'Password must be at least 6 characters.',
+                    'auth/invalid-email':         'Please enter a valid email address.',
+                    'auth/too-many-requests':     'Too many attempts. Please wait a moment and try again.',
+                    'auth/network-request-failed':'Network error. Please check your connection.',
+                    'auth/popup-closed-by-user':  'Sign-in popup was closed.',
+                };
+                return map[code] || 'Something went wrong. Please try again.';
+            };
 
             const handleSubmit = async (e) => {
                 e.preventDefault();
-                reset();
-                if (mode === 'register' && password !== confirmPass) {
-                    setError('Passwords do not match.'); return;
+                clearState();
+                if (!email.trim()) { setError('Please enter your email address.'); return; }
+                if (!password)     { setError('Please enter your password.'); return; }
+                if (mode === 'register') {
+                    if (!name.trim())          { setError('Please enter your full name.'); return; }
+                    if (password.length < 6)   { setError('Password must be at least 6 characters.'); return; }
+                    if (password !== confirmPass) { setError('Passwords do not match.'); return; }
                 }
                 setLoading(true);
                 try {
-                    const identifier = usePhone ? phone : email;
                     if (mode === 'login') {
-                        await loginWithEmail(usePhone ? phone + '@kwt.phone' : email, password);
+                        await loginWithEmail(email.trim(), password);
                     } else {
-                        await registerWithEmail(usePhone ? phone + '@kwt.phone' : email, password, name);
+                        await registerWithEmail(email.trim(), password, name.trim());
                     }
                     onClose();
                 } catch (err) {
-                    setError(err.message.replace('Firebase: ', '').replace(/\(auth\/.*?\)\.?/,'').trim());
+                    const code = err.code || '';
+                    setError(friendlyError(code));
                 } finally {
                     setLoading(false);
                 }
@@ -2806,176 +2824,159 @@
 
             const handleForgot = async (e) => {
                 e.preventDefault();
-                reset();
-                if (!email) { setError('Please enter your email address.'); return; }
+                clearState();
+                if (!email.trim()) { setError('Please enter your email address.'); return; }
                 setLoading(true);
                 try {
-                    await auth.sendPasswordResetEmail(email);
-                    setSuccessMsg('✅ Reset link sent! Check your inbox.');
+                    await auth.sendPasswordResetEmail(email.trim());
+                    setSuccess('✅ Reset link sent! Check your email inbox (and spam folder).');
                 } catch (err) {
-                    setError(err.message.replace('Firebase: ', '').replace(/\(auth\/.*?\)\.?/,'').trim());
+                    const code = err.code || '';
+                    setError(friendlyError(code));
                 } finally {
                     setLoading(false);
                 }
             };
 
-            const inputStyle = {
-                width:'100%', padding:'11px 14px', borderRadius:'12px',
+            const inp = {
+                width:'100%', padding:'11px 14px', borderRadius:'10px',
                 border:'1.5px solid #e5e7eb', background:'#f9fafb',
                 fontSize:'14px', fontFamily:'inherit', outline:'none',
-                transition:'border-color 0.18s ease', boxSizing:'border-box',
+                boxSizing:'border-box', color:'#111827',
             };
-            const inputDark  = 'dark:bg-gray-800 dark:border-gray-700 dark:text-white';
 
             return (
-                <div style={{padding:'24px 20px 20px',maxHeight:'80vh',overflowY:'auto'}} className="hide-scrollbar">
+                <div style={{padding:'22px 20px 24px', maxHeight:'82vh', overflowY:'auto'}} className="hide-scrollbar">
 
-                    {/* ── Mode Tabs ── */}
+                    {/* Mode tabs (login / register) */}
                     {mode !== 'forgot' && (
-                        <div style={{display:'flex',borderRadius:'12px',background:'#f3f4f6',padding:'4px',gap:'4px',marginBottom:'20px'}} className="dark:bg-gray-800">
-                            <button onClick={() => { setMode('login'); reset(); }}
-                                style={{flex:1,padding:'8px',borderRadius:'9px',border:'none',cursor:'pointer',fontSize:'13px',fontWeight:700,
-                                    background: mode==='login' ? '#ffffff' : 'transparent',
-                                    color:      mode==='login' ? '#0A1628'  : '#9ca3af',
-                                    boxShadow:  mode==='login' ? '0 1px 4px rgba(0,0,0,0.1)' : 'none'}}
-                                className="dark:text-gray-300">
-                                {t('login')}
-                            </button>
-                            <button onClick={() => { setMode('register'); reset(); }}
-                                style={{flex:1,padding:'8px',borderRadius:'9px',border:'none',cursor:'pointer',fontSize:'13px',fontWeight:700,
-                                    background: mode==='register' ? '#ffffff' : 'transparent',
-                                    color:      mode==='register' ? '#0A1628'  : '#9ca3af',
-                                    boxShadow:  mode==='register' ? '0 1px 4px rgba(0,0,0,0.1)' : 'none'}}
-                                className="dark:text-gray-300">
-                                Create Account
-                            </button>
+                        <div style={{display:'flex',borderRadius:'10px',background:'#f3f4f6',padding:'3px',gap:'3px',marginBottom:'18px'}}>
+                            {[['login','Login'],['register','Create Account']].map(([m,label]) => (
+                                <button key={m} type="button" onClick={() => switchMode(m)}
+                                    style={{flex:1,padding:'8px',borderRadius:'8px',border:'none',cursor:'pointer',
+                                        fontSize:'13px',fontWeight:700,transition:'all 0.15s',
+                                        background: mode===m ? '#fff' : 'transparent',
+                                        color:      mode===m ? '#0A1628' : '#6b7280',
+                                        boxShadow:  mode===m ? '0 1px 4px rgba(0,0,0,0.1)' : 'none'}}>
+                                    {label}
+                                </button>
+                            ))}
                         </div>
                     )}
 
-                    {/* ── Forgot Password header ── */}
+                    {/* Forgot password back button */}
                     {mode === 'forgot' && (
-                        <div style={{marginBottom:'18px'}}>
-                            <button onClick={() => { setMode('login'); reset(); }}
-                                style={{display:'flex',alignItems:'center',gap:'6px',background:'none',border:'none',cursor:'pointer',fontSize:'12px',color:'#9ca3af',padding:'0',marginBottom:'12px'}}>
-                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+                        <div style={{marginBottom:'16px'}}>
+                            <button type="button" onClick={() => switchMode('login')}
+                                style={{display:'flex',alignItems:'center',gap:'5px',background:'none',border:'none',
+                                    cursor:'pointer',fontSize:'12px',color:'#6b7280',padding:0,marginBottom:'10px'}}>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="15 18 9 12 15 6"/></svg>
                                 Back to Login
                             </button>
-                            <p style={{fontWeight:800,fontSize:'17px',marginBottom:'4px'}} className="text-gray-900 dark:text-white">🔑 Reset Password</p>
-                            <p style={{fontSize:'12px',color:'#9ca3af',lineHeight:1.5}}>Enter your email and we'll send you a reset link.</p>
+                            <p style={{fontWeight:800,fontSize:'16px',margin:'0 0 4px',color:'#111827'}}>Reset Password</p>
+                            <p style={{fontSize:'12px',color:'#6b7280',lineHeight:1.5,margin:0}}>
+                                Enter your email and we'll send a reset link.
+                            </p>
                         </div>
                     )}
 
-                    {/* ── Error / Success ── */}
+                    {/* Error */}
                     {error && (
-                        <div style={{padding:'10px 14px',background:'rgba(239,68,68,0.08)',border:'1px solid rgba(239,68,68,0.25)',borderRadius:'10px',fontSize:'12.5px',color:'#dc2626',marginBottom:'14px',lineHeight:1.4}} className="dark:bg-red-900/20 dark:text-red-400">
+                        <div style={{padding:'10px 13px',background:'rgba(239,68,68,0.08)',border:'1px solid rgba(239,68,68,0.2)',
+                            borderRadius:'9px',fontSize:'12.5px',color:'#dc2626',marginBottom:'13px',lineHeight:1.5}}>
                             {error}
                         </div>
                     )}
+                    {/* Success */}
                     {successMsg && (
-                        <div style={{padding:'10px 14px',background:'rgba(34,197,94,0.08)',border:'1px solid rgba(34,197,94,0.25)',borderRadius:'10px',fontSize:'12.5px',color:'#16a34a',marginBottom:'14px',lineHeight:1.4}}>
+                        <div style={{padding:'10px 13px',background:'rgba(34,197,94,0.08)',border:'1px solid rgba(34,197,94,0.2)',
+                            borderRadius:'9px',fontSize:'12.5px',color:'#16a34a',marginBottom:'13px',lineHeight:1.5}}>
                             {successMsg}
                         </div>
                     )}
 
                     {/* ── FORGOT FORM ── */}
                     {mode === 'forgot' ? (
-                        <form onSubmit={handleForgot} style={{display:'flex',flexDirection:'column',gap:'12px'}}>
+                        <form onSubmit={handleForgot} style={{display:'flex',flexDirection:'column',gap:'11px'}}>
                             <input type="email" placeholder="Email address" value={email}
-                                onChange={e => setEmail(e.target.value)}
-                                style={inputStyle} className={inputDark} required />
-                            <button type="submit" disabled={!!loading}
-                                style={{width:'100%',padding:'12px',borderRadius:'12px',border:'none',background:'#F5A623',color:'#0A1628',fontWeight:800,fontSize:'14px',cursor:'pointer',opacity:loading?0.65:1}}>
-                                {loading ? 'Sending...' : 'Send Reset Link'}
+                                onChange={e => setEmail(e.target.value)} style={inp} required autoFocus />
+                            <button type="submit" disabled={loading}
+                                style={{width:'100%',padding:'12px',borderRadius:'10px',border:'none',
+                                    background:'#F5A623',color:'#0A1628',fontWeight:800,fontSize:'14px',
+                                    cursor:loading?'not-allowed':'pointer',opacity:loading?0.65:1,
+                                    boxShadow:'0 3px 10px rgba(245,166,35,0.3)'}}>
+                                {loading ? 'Sending...' : '📧 Send Reset Link'}
                             </button>
                         </form>
+
                     ) : (
-                        /* ── LOGIN / REGISTER FORM ── */
-                        <form onSubmit={handleSubmit} style={{display:'flex',flexDirection:'column',gap:'12px'}}>
+                    /* ── LOGIN / REGISTER FORM ── */
+                    <form onSubmit={handleSubmit} style={{display:'flex',flexDirection:'column',gap:'11px'}}>
 
-                            {/* Register only: Full name */}
-                            {mode === 'register' && (
-                                <input type="text" placeholder="Full Name"
-                                    value={name} onChange={e => setName(e.target.value)}
-                                    style={inputStyle} className={inputDark} required />
-                            )}
+                        {/* Name — register only */}
+                        {mode === 'register' && (
+                            <input type="text" placeholder="Full Name" value={name}
+                                onChange={e => setName(e.target.value)} style={inp} required autoFocus />
+                        )}
 
-                            {/* Phone / Email toggle */}
-                            <div style={{display:'flex',borderRadius:'10px',background:'#f3f4f6',padding:'3px',gap:'3px',marginBottom:'2px'}} className="dark:bg-gray-800">
-                                <button type="button" onClick={() => { setUsePhone(false); reset(); }}
-                                    style={{flex:1,padding:'6px',borderRadius:'8px',border:'none',cursor:'pointer',fontSize:'12px',fontWeight:600,
-                                        background: !usePhone ? '#fff' : 'transparent',
-                                        color:      !usePhone ? '#0A1628' : '#9ca3af',
-                                        boxShadow:  !usePhone ? '0 1px 3px rgba(0,0,0,0.08)' : 'none'}}>
-                                    ✉️ Email
-                                </button>
-                                <button type="button" onClick={() => { setUsePhone(true); reset(); }}
-                                    style={{flex:1,padding:'6px',borderRadius:'8px',border:'none',cursor:'pointer',fontSize:'12px',fontWeight:600,
-                                        background: usePhone ? '#fff' : 'transparent',
-                                        color:      usePhone ? '#0A1628' : '#9ca3af',
-                                        boxShadow:  usePhone ? '0 1px 3px rgba(0,0,0,0.08)' : 'none'}}>
-                                    📱 Phone
-                                </button>
-                            </div>
+                        {/* Email */}
+                        <input type="email" placeholder="Email address" value={email}
+                            onChange={e => setEmail(e.target.value)} style={inp} required autoFocus={mode==='login'} />
 
-                            {usePhone ? (
-                                <input type="tel" placeholder="Phone number (e.g. +965 XXXX XXXX)"
-                                    value={phone} onChange={e => setPhone(e.target.value)}
-                                    style={inputStyle} className={inputDark} required />
-                            ) : (
-                                <input type="email" placeholder="Email address"
-                                    value={email} onChange={e => setEmail(e.target.value)}
-                                    style={inputStyle} className={inputDark} required />
-                            )}
+                        {/* Password */}
+                        <div style={{position:'relative'}}>
+                            <input type={showPass?'text':'password'} placeholder="Password" value={password}
+                                onChange={e => setPassword(e.target.value)}
+                                style={{...inp, paddingRight:'42px'}} required minLength={6} />
+                            <button type="button" onClick={() => setShowPass(p=>!p)}
+                                style={{position:'absolute',right:'11px',top:'50%',transform:'translateY(-50%)',
+                                    background:'none',border:'none',cursor:'pointer',color:'#9ca3af',padding:'3px',display:'flex'}}>
+                                {showPass
+                                    ? <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+                                    : <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                                }
+                            </button>
+                        </div>
 
-                            {/* Password */}
+                        {/* Confirm password — register only */}
+                        {mode === 'register' && (
                             <div style={{position:'relative'}}>
-                                <input type={showPass ? 'text' : 'password'} placeholder="Password"
-                                    value={password} onChange={e => setPassword(e.target.value)}
-                                    style={{...inputStyle, paddingRight:'42px'}} className={inputDark} required />
-                                <button type="button" onClick={() => setShowPass(p => !p)}
-                                    style={{position:'absolute',right:'12px',top:'50%',transform:'translateY(-50%)',background:'none',border:'none',cursor:'pointer',color:'#9ca3af',padding:'4px'}}>
-                                    {showPass
-                                        ? <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
-                                        : <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                                <input type={showConf?'text':'password'} placeholder="Confirm Password" value={confirmPass}
+                                    onChange={e => setConfirm(e.target.value)}
+                                    style={{...inp, paddingRight:'42px',
+                                        borderColor: confirmPass && confirmPass!==password ? '#ef4444' : '#e5e7eb'}}
+                                    required minLength={6} />
+                                <button type="button" onClick={() => setShowConf(p=>!p)}
+                                    style={{position:'absolute',right:'11px',top:'50%',transform:'translateY(-50%)',
+                                        background:'none',border:'none',cursor:'pointer',color:'#9ca3af',padding:'3px',display:'flex'}}>
+                                    {showConf
+                                        ? <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+                                        : <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                                     }
                                 </button>
                             </div>
+                        )}
 
-                            {/* Confirm password — register only */}
-                            {mode === 'register' && (
-                                <div style={{position:'relative'}}>
-                                    <input type={showConfirm ? 'text' : 'password'} placeholder="Confirm Password"
-                                        value={confirmPass} onChange={e => setConfirmPass(e.target.value)}
-                                        style={{...inputStyle, paddingRight:'42px', borderColor: confirmPass && confirmPass !== password ? '#ef4444' : '#e5e7eb'}}
-                                        className={inputDark} required />
-                                    <button type="button" onClick={() => setShowConfirm(p => !p)}
-                                        style={{position:'absolute',right:'12px',top:'50%',transform:'translateY(-50%)',background:'none',border:'none',cursor:'pointer',color:'#9ca3af',padding:'4px'}}>
-                                        {showConfirm
-                                            ? <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
-                                            : <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                                        }
-                                    </button>
-                                </div>
-                            )}
+                        {/* Forgot password link */}
+                        {mode === 'login' && (
+                            <div style={{textAlign:'right',marginTop:'-2px'}}>
+                                <button type="button" onClick={() => switchMode('forgot')}
+                                    style={{background:'none',border:'none',cursor:'pointer',
+                                        fontSize:'12px',color:'#F5A623',fontWeight:600,padding:0}}>
+                                    Forgot password?
+                                </button>
+                            </div>
+                        )}
 
-                            {/* Forgot password link — login mode only */}
-                            {mode === 'login' && (
-                                <div style={{textAlign:'right',marginTop:'-4px'}}>
-                                    <button type="button" onClick={() => { setMode('forgot'); reset(); }}
-                                        style={{background:'none',border:'none',cursor:'pointer',fontSize:'12px',color:'#F5A623',fontWeight:600,padding:0}}>
-                                        Forgot password?
-                                    </button>
-                                </div>
-                            )}
+                        <button type="submit" disabled={loading}
+                            style={{width:'100%',padding:'12px',borderRadius:'10px',border:'none',
+                                background:'#F5A623',color:'#0A1628',fontWeight:800,fontSize:'14px',
+                                cursor:loading?'not-allowed':'pointer',opacity:loading?0.65:1,
+                                boxShadow:'0 3px 12px rgba(245,166,35,0.35)',marginTop:'2px'}}>
+                            {loading ? 'Please wait...' : mode==='login' ? '🔐 Login' : '🚀 Create Account'}
+                        </button>
 
-                            <button type="submit" disabled={!!loading}
-                                style={{width:'100%',padding:'13px',borderRadius:'12px',border:'none',
-                                    background:'#F5A623',color:'#0A1628',fontWeight:800,fontSize:'14px',
-                                    cursor:loading?'not-allowed':'pointer',opacity:loading?0.65:1,
-                                    boxShadow:'0 4px 14px rgba(245,166,35,0.35)',marginTop:'2px'}}>
-                                {loading ? 'Please wait...' : mode==='login' ? t('login') : 'Create Account'}
-                            </button>
-                        </form>
+                    </form>
                     )}
                 </div>
             );
