@@ -2673,8 +2673,8 @@
                                             </div>
                                             {languages.map(lang => (
                                                 <button key={lang.code} onClick={() => { changeLanguage(lang.code); setShowLangMenu(false); }}
-                                                    style={{width:'100%',padding:'10px 14px',textAlign:'left',display:'flex',alignItems:'center',gap:'10px',fontSize:'13px',border:'none',cursor:'pointer',background: currentLang===lang.code ? 'rgba(245,166,35,0.08)' : 'transparent', color: currentLang===lang.code ? '#F5A623' : 'inherit', fontWeight: currentLang===lang.code ? 700 : 400}}
-                                                    className="hover:bg-gray-100 dark:hover:bg-gray-800 text-light-text dark:text-dark-text transition-colors"
+                                                    style={{width:'100%',padding:'10px 14px',textAlign:'left',display:'flex',alignItems:'center',gap:'10px',fontSize:'13px',border:'none',cursor:'pointer',background: currentLang===lang.code ? 'rgba(245,166,35,0.08)' : 'transparent', color: currentLang===lang.code ? '#F5A623' : '#1a1a1a', fontWeight: currentLang===lang.code ? 700 : 400}}
+                                                    className="hover:bg-gray-100 transition-colors"
                                                 >
                                                     <span>{lang.flag}</span>
                                                     <span style={{flex:1}}>{lang.name}</span>
