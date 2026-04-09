@@ -1651,7 +1651,7 @@
                         id: doc.id,
                         ...doc.data(),
                         timestamp: doc.data().timestamp?.toDate()
-                    })).filter(n => !n.hidden && (!n.status || n.status === 'active' || n.status === 'Active'));
+                    })).filter(n => !n.hidden && (n.status === 'published' || n.status === 'active' || n.status === 'Active' || !n.status));
                     if (category === 'all') {
                         newsData = newsData.filter(n => !SPECIAL_CATEGORIES.includes(n.category));
                     }
@@ -1692,7 +1692,7 @@
                         id: doc.id,
                         ...doc.data(),
                         timestamp: doc.data().timestamp?.toDate()
-                    })).filter(n => !n.hidden && (!n.status || n.status === 'active' || n.status === 'Active'));
+                    })).filter(n => !n.hidden && (n.status === 'published' || n.status === 'active' || n.status === 'Active' || !n.status));
                     // Filter special categories from home feed
                     if (category === 'all') {
                         newNews = newNews.filter(n => !SPECIAL_CATEGORIES.includes(n.category));
@@ -2092,7 +2092,7 @@
                         if (cancelled) return;
                         const found = snap.docs
                             .map(d => ({ id: d.id, ...d.data(), timestamp: d.data().timestamp?.toDate() }))
-                            .filter(n => !n.hidden && (!n.status || n.status === 'active' || n.status === 'Active'))
+                            .filter(n => !n.hidden && (n.status === 'published' || n.status === 'active' || n.status === 'Active' || !n.status))
                             .filter(n => {
                                 const title   = (n.title   || '').toLowerCase();
                                 const summary = (n.summary || '').toLowerCase();
@@ -3165,10 +3165,10 @@
             
             const totalEngagement = views + likes + commentCount;
 
-            // Check if video
-            const isVideo = news.mediaType === 'video' || !!news.videoUrl || !!(news.imageUrl?.match(/\.(mp4|webm|ogg)(\?|$)/i));
+            // Check if video — mediaType is always "article" per schema; only videoUrl tells us it's a video
+            const isVideo = !!(news.videoUrl && news.videoUrl.trim());
             // Lazy-load video src
-            const [lazyVideoSrc, videoContainerRef] = useLazyVideoSrc(isVideo ? (news.videoUrl || news.imageUrl) : null);
+            const [lazyVideoSrc, videoContainerRef] = useLazyVideoSrc(isVideo ? news.videoUrl : null);
             
             return (
             <React.Fragment>
@@ -3520,7 +3520,8 @@
                 setShareOpen(false);
             };
 
-            const isVideo = news.mediaType === 'video' || !!news.videoUrl;
+            // mediaType is always "article" per schema; videoUrl presence = video
+            const isVideo = !!(news.videoUrl && news.videoUrl.trim());
 
             return (
                 <div style={{position:'fixed',inset:0,zIndex:300,display:'flex',alignItems:'flex-end',justifyContent:'center'}}
@@ -3550,7 +3551,7 @@
                             {/* Media */}
                             <div style={{width:'100%',aspectRatio:'16/9',background:'#111',position:'relative',flexShrink:0}}>
                                 {isVideo
-                                    ? <video src={news.videoUrl || news.imageUrl} poster={news.thumbnail || news.thumbnailUrl || ''} controls preload="none" style={{width:'100%',height:'100%',objectFit:'cover'}}/>
+                                    ? <video src={news.videoUrl} poster={news.thumbnail || news.thumbnailUrl || ''} controls preload="none" style={{width:'100%',height:'100%',objectFit:'cover'}}/>
                                     : <img src={news.imageUrl || 'https://placehold.co/800x450/0A1628/F5A623?text=KWT+News'} alt={news.title} style={{width:'100%',height:'100%',objectFit:'cover'}} loading="eager" decoding="async" onError={e=>{e.target.src='https://placehold.co/800x450/0A1628/F5A623?text=KWT+News';}}/>
                                 }
                                 <div style={{position:'absolute',bottom:'10px',left:'10px',background:'rgba(0,0,0,0.58)',backdropFilter:'blur(6px)',borderRadius:'999px',padding:'4px 12px',display:'flex',alignItems:'center',gap:'6px'}}>
@@ -4160,7 +4161,7 @@
                     .limit(10)
                     .onSnapshot(snapshot => {
                         setTrending(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data(), timestamp: doc.data().timestamp?.toDate() }))
-                            .filter(n => !n.hidden && (!n.status || n.status === 'active' || n.status === 'Active'))
+                            .filter(n => !n.hidden && (n.status === 'published' || n.status === 'active' || n.status === 'Active' || !n.status))
                             .slice(0, 5));
                     }, () => {});
                     
@@ -4170,7 +4171,7 @@
                     .limit(10)
                     .onSnapshot(snapshot => {
                         setLatest(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data(), timestamp: doc.data().timestamp?.toDate() }))
-                            .filter(n => !n.hidden && (!n.status || n.status === 'active' || n.status === 'Active'))
+                            .filter(n => !n.hidden && (n.status === 'published' || n.status === 'active' || n.status === 'Active' || !n.status))
                             .slice(0, 5));
                     }, () => {});
                     
@@ -4524,7 +4525,7 @@
                     .limit(5)
                     .onSnapshot(snap => {
                         setBreakingNews(snap.docs.map(d => ({ id: d.id, ...d.data() }))
-                            .filter(n => !n.hidden && (!n.status || n.status === 'active' || n.status === 'Active')));
+                            .filter(n => !n.hidden && (n.status === 'published' || n.status === 'active' || n.status === 'Active' || !n.status)));
                     }, () => {});
                 return () => unsub();
             }, []);
