@@ -1028,9 +1028,39 @@
                 <div style="color:white;font-family:Inter,Arial,sans-serif;font-weight:900;font-size:22px;letter-spacing:0.09em;line-height:1;">KWT NEWS</div>
                 <div style="color:rgba(245,166,35,0.65);font-family:Inter,Arial,sans-serif;font-size:11px;letter-spacing:0.06em;font-weight:500;">kwtnews.com</div>
             </div>
-            <!-- Spinner -->
-            <div style="width:28px;height:28px;border-radius:50%;border:2px solid rgba(245,166,35,0.12);border-top-color:#F5A623;animation:spin 0.68s linear infinite;box-shadow:0 0 12px rgba(245,166,35,0.15);"></div>
+            <!-- Progress bar loading -->
+            <div style="width:220px;display:flex;flex-direction:column;align-items:center;gap:8px;">
+                <div style="width:100%;height:4px;background:rgba(255,255,255,0.08);border-radius:99px;overflow:hidden;">
+                    <div id="kwt-progress-bar" style="height:100%;width:0%;background:linear-gradient(90deg,#0d3b66,#1a5f7a,#2ea854);border-radius:99px;transition:width 0.12s ease;"></div>
+                </div>
+                <div id="kwt-progress-pct" style="font-size:11px;color:rgba(245,166,35,0.7);font-family:Inter,Arial,sans-serif;font-weight:600;letter-spacing:0.06em;">0%</div>
+            </div>
             <style>@keyframes spin{to{transform:rotate(360deg)}}</style>
+            <script>
+                (function(){
+                    var pct = 0;
+                    var bar = document.getElementById('kwt-progress-bar');
+                    var lbl = document.getElementById('kwt-progress-pct');
+                    var iv = setInterval(function(){
+                        // Accelerate quickly to 70%, then slow down waiting for Firebase
+                        var step = pct < 40 ? 4 : pct < 70 ? 2 : pct < 85 ? 0.5 : 0.1;
+                        pct = Math.min(pct + step, 88);
+                        if(bar) bar.style.width = pct + '%';
+                        if(lbl) lbl.textContent = Math.round(pct) + '%';
+                    }, 60);
+                    window._kwtProgressIv = iv;
+                    window.kwtCompleteLoader = function(){
+                        clearInterval(iv);
+                        if(bar){ bar.style.width='100%'; bar.style.transition='width 0.25s ease'; }
+                        if(lbl) lbl.textContent = '100%';
+                        setTimeout(function(){
+                            var el = document.getElementById('initial-loader');
+                            if(el){ el.style.transition='opacity 0.3s'; el.style.opacity='0'; }
+                            setTimeout(function(){ if(el) el.style.display='none'; }, 320);
+                        }, 180);
+                    };
+                })();
+            </script>
         </div>
     </div>
     <div id="google_translate_element" style="display:none;"></div>
@@ -1688,10 +1718,13 @@
                         newsData = newsData.filter(n => !SPECIAL_CATEGORIES.includes(n.category));
                     }
                     lastDocRef.current = snapshot.docs[snapshot.docs.length - 1] || null;
-                    setCachedNews(category, newsData); // save to cache for instant next load
-                    setNews(newsData);
+                    // Only update state if we got real data — never flash empty list
+                    if (newsData.length > 0) {
+                        setCachedNews(category, newsData);
+                        setNews(newsData);
+                        setHasMore(snapshot.docs.length === fetchLimit);
+                    }
                     setLoading(false);
-                    setHasMore(snapshot.docs.length === fetchLimit);
                 }, (error) => {
                     clearTimeout(timeout);
                     if (!mounted.current) return;
@@ -4399,6 +4432,18 @@
             const [activeTab, setActiveTab] = useState(() => {
                 try { return localStorage.getItem('kwtActiveTab') || 'all'; } catch(e) { return 'all'; }
             });
+
+            // Global single-video-at-a-time: pause all other videos when one plays
+            useEffect(() => {
+                const handlePlay = (e) => {
+                    if (e.target.tagName !== 'VIDEO') return;
+                    document.querySelectorAll('video').forEach(v => {
+                        if (v !== e.target && !v.paused) v.pause();
+                    });
+                };
+                document.addEventListener('play', handlePlay, true);
+                return () => document.removeEventListener('play', handlePlay, true);
+            }, []);
             const [searchQuery, setSearchQuery] = useState('');
             const [selectedNews, setSelectedNews] = useState(null);
             const [breakingNews, setBreakingNews] = useState([]);
@@ -4931,9 +4976,13 @@
         
         const root = createRoot(document.getElementById('root'));
         root.render(<Root />);
-        // Hide initial loader once React renders
-        const loader = document.getElementById('initial-loader');
-        if (loader) loader.style.display = 'none';
+        // Complete progress bar → fade out loader
+        if (typeof window.kwtCompleteLoader === 'function') {
+            window.kwtCompleteLoader();
+        } else {
+            const loader = document.getElementById('initial-loader');
+            if (loader) loader.style.display = 'none';
+        }
     </script>
     
     <!-- FIX 6: Share links use hash (#news-ID) which works on any host including GitHub Pages -->
