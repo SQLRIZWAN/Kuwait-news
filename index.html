@@ -198,11 +198,12 @@
     <!-- React & ReactDOM -->
     <script defer src="https://cdn.jsdelivr.net/npm/react@18.2.0/umd/react.production.min.js"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
-    <!-- Firebase (must be before Babel) -->
+    <!-- Firebase core (must be before Babel) -->
     <script defer src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script defer src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
     <script defer src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-    <script defer src="https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging-compat.js"></script>
+    <!-- messaging loaded async after app starts — does NOT block news loading -->
+    <script async src="https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging-compat.js"></script>
     <!-- i18next (must be before Babel) -->
     <script defer src="https://cdn.jsdelivr.net/npm/i18next@23.7.16/dist/umd/i18next.min.js"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/react-i18next@13.5.0/dist/umd/react-i18next.min.js"></script>
@@ -1120,20 +1121,12 @@
         const app = firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
-        // Improve Firestore connection reliability on mobile
-        try {
-            db.settings({ 
-                experimentalForceLongPolling: true, 
-                merge: true 
-            });
-        } catch(e) {}
-        // Firebase Messaging — enabled for push notifications
+        // NOTE: experimentalForceLongPolling removed — it caused 3-minute delays.
+        // WebSocket is the default and is much faster.
+
+        // Firebase Messaging — lazy init after app loads (not critical for news reading)
         let messaging = null;
-        try {
-            messaging = firebase.messaging();
-        } catch(e) {
-            console.log('[KWT] Messaging init skipped:', e.message);
-        }
+        // Messaging is loaded separately after app starts to not block news loading
         
         // Cloudinary Configuration
         const CLOUDINARY_CONFIG = {
@@ -1693,17 +1686,18 @@
 
                 const timeout = setTimeout(() => { if (mounted.current) setLoading(false); }, 3000);
 
+                // category queries use only orderBy (no composite index needed)
+                // category-specific: filter client-side after fetching by timestamp
                 let query;
                 if (category === 'all') {
-                    query = db.collection('news').orderBy('timestamp', 'desc');
+                    query = db.collection('news').orderBy('timestamp', 'desc').limit(limit);
                 } else {
-                    query = db.collection('news')
-                        .where('category', '==', category)
-                        .orderBy('timestamp', 'desc');
+                    // No .where() + .orderBy() combo — that needs a composite index.
+                    // Instead: fetch recent news and filter by category client-side.
+                    query = db.collection('news').orderBy('timestamp', 'desc').limit(limit * 5);
                 }
 
-                const fetchLimit = category === 'all' ? limit * 3 : limit;
-                query = query.limit(fetchLimit);
+                const fetchLimit = limit;
 
                 const unsubscribe = query.onSnapshot((snapshot) => {
                     clearTimeout(timeout);
@@ -1713,21 +1707,29 @@
                         ...doc.data(),
                         timestamp: doc.data().timestamp?.toDate()
                     })).filter(n => !n.hidden && (n.status === 'published' || n.status === 'active' || n.status === 'Active' || !n.status));
+
+                    // Filter by category client-side (avoids Firestore composite index requirement)
                     if (category === 'all') {
                         newsData = newsData.filter(n => !SPECIAL_CATEGORIES.includes(n.category));
+                    } else {
+                        newsData = newsData.filter(n => n.category === category);
                     }
+
                     lastDocRef.current = snapshot.docs[snapshot.docs.length - 1] || null;
-                    // Only update state if we got real data — never flash empty list
+                    // Use functional update: never replace existing news with empty list
+                    setNews(prev => newsData.length > 0 ? newsData : prev);
                     if (newsData.length > 0) {
                         setCachedNews(category, newsData);
-                        setNews(newsData);
-                        setHasMore(snapshot.docs.length === fetchLimit);
+                        setHasMore(newsData.length >= fetchLimit);
                     }
                     setLoading(false);
                 }, (error) => {
                     clearTimeout(timeout);
                     if (!mounted.current) return;
                     console.error('News fetch error:', error);
+                    // On error, still show cached news if available
+                    const cached = getCachedNews(category);
+                    if (cached && cached.length > 0) setNews(cached);
                     setLoading(false);
                 });
 
@@ -1744,28 +1746,28 @@
             const loadMore = async () => {
                 if (!lastDocRef.current) return;
                 try {
-                    let query = db.collection('news').orderBy('timestamp', 'desc');
-                    if (category !== 'all') {
-                        query = db.collection('news')
-                            .where('category', '==', category)
-                            .orderBy('timestamp', 'desc');
-                    }
-                    query = query.startAfter(lastDocRef.current).limit(limit);
-                    
+                    // Always use simple orderBy — no composite index needed
+                    const query = db.collection('news')
+                        .orderBy('timestamp', 'desc')
+                        .startAfter(lastDocRef.current)
+                        .limit(limit * (category === 'all' ? 1 : 5));
+
                     const snapshot = await query.get();
                     let newNews = snapshot.docs.map(doc => ({
                         id: doc.id,
                         ...doc.data(),
                         timestamp: doc.data().timestamp?.toDate()
                     })).filter(n => !n.hidden && (n.status === 'published' || n.status === 'active' || n.status === 'Active' || !n.status));
-                    // Filter special categories from home feed
+
                     if (category === 'all') {
                         newNews = newNews.filter(n => !SPECIAL_CATEGORIES.includes(n.category));
+                    } else {
+                        newNews = newNews.filter(n => n.category === category);
                     }
-                    
+
                     lastDocRef.current = snapshot.docs[snapshot.docs.length - 1] || lastDocRef.current;
-                    setNews(prev => [...prev, ...newNews]);
-                    setHasMore(snapshot.docs.length === limit);
+                    if (newNews.length > 0) setNews(prev => [...prev, ...newNews]);
+                    setHasMore(newNews.length >= limit);
                 } catch (err) {
                     console.error('Load more error:', err);
                 }
