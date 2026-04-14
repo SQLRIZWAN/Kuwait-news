@@ -1015,12 +1015,11 @@
     </style>
 </head>
 <body class="antialiased">
-    <div id="root">
-        <!-- Fallback shown while Babel/React loads -->
-        <div id="initial-loader" style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:radial-gradient(ellipse at 50% 40%, #102040 0%, #07101f 50%, #050d18 100%);gap:24px;padding:24px;">
-            <div style="display:flex;flex-direction:column;align-items:center;gap:10px;">
-                <!-- Logo mark — Kuwait Towers icon -->
-                <div style="position:relative;margin-bottom:4px;">
+    <!-- Loading screen — outside #root so React cannot destroy it during render -->
+    <div id="initial-loader" style="position:fixed;inset:0;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;background:radial-gradient(ellipse at 50% 40%, #102040 0%, #07101f 50%, #050d18 100%);gap:24px;padding:24px;">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:10px;">
+            <!-- Logo mark — Kuwait Towers icon -->
+            <div style="position:relative;margin-bottom:4px;">
                     <img src="data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgNTAwIDUwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8ZGVmcz4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0ibWFpbkdyYWRpZW50IiB4MT0iMCUiIHkxPSIxMDAlIiB4Mj0iMTAwJSIgeTI9IjAlIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iIzBkM2I2NiIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjUwJSIgc3RvcC1jb2xvcj0iIzFhNWY3YSIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiMyZWE4NTQiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgPC9kZWZzPgoKICA8ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSgyNSwgNDApIj4KICAgIDxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDMxMCwgMjYwKSI+CiAgICAgIDxjaXJjbGUgY3g9IjAiIGN5PSIwIiByPSI2NSIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ1cmwoI21haW5HcmFkaWVudCkiIHN0cm9rZS13aWR0aD0iNiIvPgogICAgICA8bGluZSB4MT0iLTYwIiB5MT0iLTIyIiB4Mj0iNjAiIHkyPSItMjIiIHN0cm9rZT0idXJsKCNtYWluR3JhZGllbnQpIiBzdHJva2Utd2lkdGg9IjQiLz4KICAgICAgPGxpbmUgeDE9Ii02NSIgeTE9IjAiIHgyPSI2NSIgeTI9IjAiIHN0cm9rZT0idXJsKCNtYWluR3JhZGllbnQpIiBzdHJva2Utd2lkdGg9IjQiLz4KICAgICAgPGxpbmUgeDE9Ii02MCIgeTE9IjIyIiB4Mj0iNjAiIHkyPSIyMiIgc3Ryb2tlPSJ1cmwoI21haW5HcmFkaWVudCkiIHN0cm9rZS13aWR0aD0iNCIvPgogICAgICA8ZWxsaXBzZSBjeD0iMCIgY3k9IjAiIHJ4PSIyMiIgcnk9IjY1IiBmaWxsPSJub25lIiBzdHJva2U9InVybCgjbWFpbkdyYWRpZW50KSIgc3Ryb2tlLXdpZHRoPSI0Ii8+CiAgICAgIDxlbGxpcHNlIGN4PSIwIiBjeT0iMCIgcng9IjQ0IiByeT0iNjUiIGZpbGw9Im5vbmUiIHN0cm9rZT0idXJsKCNtYWluR3JhZGllbnQpIiBzdHJva2Utd2lkdGg9IjQiLz4KICAgICAgPGxpbmUgeDE9IjAiIHkxPSItNjUiIHgyPSIwIiB5Mj0iNjUiIHN0cm9rZT0idXJsKCNtYWluR3JhZGllbnQpIiBzdHJva2Utd2lkdGg9IjQiLz4KICAgIDwvZz4KCiAgICA8cGF0aCBkPSJNIDIxMCAzMjAgTCAyNjAgMzIwIEwgMjM1IDkwIFoiIGZpbGw9InVybCgjbWFpbkdyYWRpZW50KSIvPgogICAgPGNpcmNsZSBjeD0iMjM1IiBjeT0iMjI1IiByPSIzNCIgZmlsbD0idXJsKCNtYWluR3JhZGllbnQpIi8+CiAgICA8cmVjdCB4PSIyMDAiIHk9IjIyMSIgd2lkdGg9IjcwIiBoZWlnaHQ9IjgiIHJ4PSIyIiBmaWxsPSJ1cmwoI21haW5HcmFkaWVudCkiLz4KICAgIDxjaXJjbGUgY3g9IjIzNSIgY3k9IjE0NSIgcj0iMTkiIGZpbGw9InVybCgjbWFpbkdyYWRpZW50KSIvPgoKICAgIDxwYXRoIGQ9Ik0gMTc1IDMyMCBMIDE5NSAzMjAgTCAxODUgMTUwIFoiIGZpbGw9InVybCgjbWFpbkdyYWRpZW50KSIvPgoKICAgIDxwYXRoIGQ9Ik0gMTMwIDMyMCBMIDE1NSAzMjAgTCAxNDIuNSAxNDAgWiIgZmlsbD0idXJsKCNtYWluR3JhZGllbnQpIi8+CiAgICA8Y2lyY2xlIGN4PSIxNDIuNSIgY3k9IjIzMCIgcj0iMjMiIGZpbGw9InVybCgjbWFpbkdyYWRpZW50KSIvPgoKICAgIDxjaXJjbGUgY3g9IjI2NSIgY3k9IjE3MCIgcj0iMTIiIGZpbGw9InVybCgjbWFpbkdyYWRpZW50KSIvPgogICAgPHBhdGggZD0iTSAyODIgMTQ1IEEgMzUgMzUgMCAwIDEgMzE1IDE3OCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ1cmwoI21haW5HcmFkaWVudCkiIHN0cm9rZS13aWR0aD0iMTAiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgogICAgPHBhdGggZD0iTSAyOTggMTE1IEEgNjUgNjUgMCAwIDEgMzQ1IDE2MiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ1cmwoI21haW5HcmFkaWVudCkiIHN0cm9rZS13aWR0aD0iMTAiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgogICAgPHBhdGggZD0iTSAzMTQgODUgQSA5NSA5NSAwIDAgMSAzNzUgMTQ2IiBmaWxsPSJub25lIiBzdHJva2U9InVybCgjbWFpbkdyYWRpZW50KSIgc3Ryb2tlLXdpZHRoPSIxMCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CgogICAgPHBhdGggZD0iTSA5MCAzMjUgUSAyNDAgMjkwIDM5MCAzMjUgUSAyNDAgMzEwIDkwIDMyNSBaIiBmaWxsPSJ1cmwoI21haW5HcmFkaWVudCkiLz4KICA8L2c+Cjwvc3ZnPgo=" width="72" height="72"
                          style="border-radius:18px;display:block;box-shadow:0 8px 32px rgba(0,0,0,0.5),0 0 0 1px rgba(245,166,35,0.15);"
                          alt="KWT News">
@@ -1061,8 +1060,9 @@
                     };
                 })();
             </script>
-        </div>
     </div>
+    <!-- React mounts here — empty on first paint, loader above covers it -->
+    <div id="root"></div>
     <div id="google_translate_element" style="display:none;"></div>
     
     <!-- Install Prompt -->
@@ -4432,18 +4432,6 @@
             const [activeTab, setActiveTab] = useState(() => {
                 try { return localStorage.getItem('kwtActiveTab') || 'all'; } catch(e) { return 'all'; }
             });
-
-            // Global single-video-at-a-time: pause all other videos when one plays
-            useEffect(() => {
-                const handlePlay = (e) => {
-                    if (e.target.tagName !== 'VIDEO') return;
-                    document.querySelectorAll('video').forEach(v => {
-                        if (v !== e.target && !v.paused) v.pause();
-                    });
-                };
-                document.addEventListener('play', handlePlay, true);
-                return () => document.removeEventListener('play', handlePlay, true);
-            }, []);
             const [searchQuery, setSearchQuery] = useState('');
             const [selectedNews, setSelectedNews] = useState(null);
             const [breakingNews, setBreakingNews] = useState([]);
@@ -4467,6 +4455,18 @@
             const { notifications, removeNotification, addNotification } = useNotifications();
             const { t } = useTranslation();
             const { user } = useAuth();
+
+            // Global single-video-at-a-time: pause all other videos when one plays
+            useEffect(() => {
+                const handlePlay = (e) => {
+                    if (e.target.tagName !== 'VIDEO') return;
+                    document.querySelectorAll('video').forEach(v => {
+                        if (v !== e.target && !v.paused) v.pause();
+                    });
+                };
+                document.addEventListener('play', handlePlay, true);
+                return () => document.removeEventListener('play', handlePlay, true);
+            }, []);
 
             // ── FIX 10: online/offline ──
             useEffect(() => {
