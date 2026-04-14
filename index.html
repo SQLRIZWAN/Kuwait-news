@@ -1121,8 +1121,11 @@
         const app = firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
-        // NOTE: experimentalForceLongPolling removed — it caused 3-minute delays.
-        // WebSocket is the default and is much faster.
+        // Auto-detect: tries WebSocket first, falls back to long-polling if blocked
+        // (Kuwait sometimes blocks WebSocket connections to Firestore)
+        try {
+            db.settings({ experimentalAutoDetectLongPolling: true, merge: true });
+        } catch(e) {}
 
         // Firebase Messaging — lazy init after app loads (not critical for news reading)
         let messaging = null;
