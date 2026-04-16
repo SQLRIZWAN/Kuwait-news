@@ -4,9 +4,9 @@ importScripts('https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js'
 importScripts('https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging-compat.js');
 
 // ── Cache config ─────────────────────────────────────────────────────────────
-const CACHE_NAME = 'kwtnews-v3';
+const CACHE_NAME = 'kwtnews-v4';
 const OFFLINE_URL = '/offline.html';
-const PRECACHE = ['/', '/offline.html', '/manifest.json', '/icon-192.png', '/icon-512.png', '/icon.svg'];
+const PRECACHE = ['/', '/offline.html', '/manifest.json', '/icon-192.png', '/icon-512.png', '/icon.svg', '/app.js'];
 
 // ── Firebase init ─────────────────────────────────────────────────────────────
 firebase.initializeApp({
@@ -61,8 +61,8 @@ self.addEventListener('fetch', (e) => {
         return;
     }
 
-    // Static assets → cache first
-    if (['.png','.svg','.ico'].some(ext => url.pathname.endsWith(ext)) || url.pathname === '/manifest.json') {
+    // Static assets + compiled app JS → cache first
+    if (['.png','.svg','.ico','.js'].some(ext => url.pathname.endsWith(ext)) || url.pathname === '/manifest.json') {
         e.respondWith(
             caches.match(request).then(
                 (cached) => cached || fetch(request).then((res) => {
