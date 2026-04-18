@@ -601,9 +601,12 @@ const setCachedNews = (key, data) => {
 // Real-time news hook — instant display via localStorage cache
 const useNews = (category = 'all', limit = 20, refreshKey = 0) => {
   const cacheKey = category;
+  const hasCachedData = !!(getCachedNews(cacheKey)?.length);
   // Pre-populate from cache so news shows instantly (before Firebase responds)
   const [news, setNews] = useState(() => getCachedNews(cacheKey) || []);
-  const [loading, setLoading] = useState(() => !getCachedNews(cacheKey));
+  const [loading, setLoading] = useState(() => !hasCachedData);
+  // fetched = true once Firestore has responded (with data OR confirmed empty)
+  const [fetched, setFetched] = useState(() => hasCachedData);
   const [hasMore, setHasMore] = useState(true);
   const lastDocRef = useRef(null);
   const mounted = useRef(true);
@@ -617,16 +620,19 @@ const useNews = (category = 'all', limit = 20, refreshKey = 0) => {
       if (cached && cached.length > 0) {
         setNews(cached);
         setLoading(false);
+        setFetched(true);
       } else {
         setLoading(true);
+        setFetched(false);
         setNews([]);
       }
     }
     setHasMore(true);
     lastDocRef.current = null;
+    // Safety timeout: only used if Firestore never responds (e.g. offline)
     const timeout = setTimeout(() => {
-      if (mounted.current) setLoading(false);
-    }, 800); // Reduced: if Firestore hasn't responded in 0.8s, show cache/skeleton
+      if (mounted.current) { setLoading(false); setFetched(true); }
+    }, 8000);
 
     // Use server-side category filter when a specific category is selected.
     // Composite index required: category ASC + timestamp DESC (see firestore.indexes.json).
@@ -665,6 +671,7 @@ const useNews = (category = 'all', limit = 20, refreshKey = 0) => {
         setHasMore(newsData.length >= fetchLimit);
       }
       setLoading(false);
+      setFetched(true); // Firestore responded — stop showing skeletons
     }, error => {
       clearTimeout(timeout);
       if (!mounted.current) return;
@@ -680,13 +687,15 @@ const useNews = (category = 'all', limit = 20, refreshKey = 0) => {
           setNews(prev => data.length > 0 ? data : prev);
           if (data.length > 0) setCachedNews(category, data);
           setLoading(false);
-        }, () => setLoading(false));
+          setFetched(true);
+        }, () => { setLoading(false); setFetched(true); });
         return;
       }
       console.error('News fetch error:', error);
       const cached = getCachedNews(category);
       if (cached && cached.length > 0) setNews(cached);
       setLoading(false);
+      setFetched(true);
     });
     return () => {
       // FIX 17: Explicitly mark unmounted BEFORE calling unsubscribe so
@@ -730,6 +739,7 @@ const useNews = (category = 'all', limit = 20, refreshKey = 0) => {
   return {
     news,
     loading,
+    fetched,
     hasMore,
     loadMore
   };
@@ -7468,6 +7478,7 @@ const App = () => {
   const {
     news,
     loading,
+    fetched,
     hasMore,
     loadMore
   } = useNews(activeTab, 20, refreshKey);
@@ -7955,7 +7966,7 @@ const App = () => {
     className: "grid grid-cols-1 lg:grid-cols-3 gap-8"
   }, /*#__PURE__*/React.createElement("div", {
     className: "lg:col-span-2 space-y-6 no-copy"
-  }, loading ? /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(NewsCardSkeleton, null), /*#__PURE__*/React.createElement(NewsCardSkeleton, null), /*#__PURE__*/React.createElement(NewsCardSkeleton, null)) : newsWithAds.length === 0 ?
+  }, (!fetched || (loading && news.length === 0)) ? /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(NewsCardSkeleton, null), /*#__PURE__*/React.createElement(NewsCardSkeleton, null), /*#__PURE__*/React.createElement(NewsCardSkeleton, null), /*#__PURE__*/React.createElement(NewsCardSkeleton, null), /*#__PURE__*/React.createElement(NewsCardSkeleton, null)) : newsWithAds.length === 0 ?
   /*#__PURE__*/
   /* FIX 20: Premium Empty State */
   React.createElement("div", {
