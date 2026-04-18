@@ -567,7 +567,7 @@ const useFocusTrap = containerRef => {
 const SPECIAL_CATEGORIES = ['kuwait-jobs', 'kuwait-offers', 'funny-news-meme'];
 
 // localStorage cache helpers for instant news display
-const CACHE_TTL = 15 * 60 * 1000; // 15 minutes — longer TTL = more cache hits
+const CACHE_TTL = 30 * 60 * 1000; // 30 minutes — news doesn't change that fast; more cache hits = faster loads
 const getCachedNews = key => {
   try {
     const raw = localStorage.getItem('kwt_cache_' + key);
@@ -626,18 +626,21 @@ const useNews = (category = 'all', limit = 20, refreshKey = 0) => {
     lastDocRef.current = null;
     const timeout = setTimeout(() => {
       if (mounted.current) setLoading(false);
-    }, 1500);
+    }, 800); // Reduced: if Firestore hasn't responded in 0.8s, show cache/skeleton
 
-    // category queries use only orderBy (no composite index needed)
-    // category-specific: filter client-side after fetching by timestamp
+    // Use server-side category filter when a specific category is selected.
+    // Composite index required: category ASC + timestamp DESC (see firestore.indexes.json).
+    // Falls back to client-side filter if the index hasn't been deployed yet.
     let query;
+    let usingIndexQuery = false;
     if (category === 'all') {
       query = db.collection('news').orderBy('timestamp', 'desc').limit(limit);
     } else {
-      // No .where() + .orderBy() combo — that needs a composite index.
-      // Instead: fetch recent news and filter by category client-side.
-      // 2x multiplier (was 5x) — enough to fill screen without over-fetching
-      query = db.collection('news').orderBy('timestamp', 'desc').limit(limit * 2);
+      query = db.collection('news')
+        .where('category', '==', category)
+        .orderBy('timestamp', 'desc')
+        .limit(limit);
+      usingIndexQuery = true;
     }
     const fetchLimit = limit;
     const unsubscribe = query.onSnapshot(snapshot => {
@@ -649,12 +652,11 @@ const useNews = (category = 'all', limit = 20, refreshKey = 0) => {
         timestamp: doc.data().timestamp?.toDate()
       })).filter(n => !n.hidden && (n.status === 'published' || n.status === 'active' || n.status === 'Active' || !n.status));
 
-      // Filter by category client-side (avoids Firestore composite index requirement)
+      // For 'all', exclude special categories client-side (no index needed)
       if (category === 'all') {
         newsData = newsData.filter(n => !SPECIAL_CATEGORIES.includes(n.category));
-      } else {
-        newsData = newsData.filter(n => n.category === category);
       }
+      // For specific category, the where() clause already filtered — no extra work needed
       lastDocRef.current = snapshot.docs[snapshot.docs.length - 1] || null;
       // Use functional update: never replace existing news with empty list
       setNews(prev => newsData.length > 0 ? newsData : prev);
@@ -666,8 +668,22 @@ const useNews = (category = 'all', limit = 20, refreshKey = 0) => {
     }, error => {
       clearTimeout(timeout);
       if (!mounted.current) return;
+      // If composite index is missing, fall back to client-side category filtering
+      if (usingIndexQuery && (error.code === 'failed-precondition' || (error.message && error.message.includes('index')))) {
+        console.warn('Composite index missing — falling back to client-side filter. Deploy firestore.indexes.json to fix.');
+        const fallback = db.collection('news').orderBy('timestamp', 'desc').limit(limit * 2);
+        fallback.onSnapshot(snap => {
+          if (!mounted.current) return;
+          let data = snap.docs.map(doc => ({ id: doc.id, ...doc.data(), timestamp: doc.data().timestamp?.toDate() }))
+            .filter(n => !n.hidden && (n.status === 'published' || n.status === 'active' || n.status === 'Active' || !n.status))
+            .filter(n => n.category === category);
+          setNews(prev => data.length > 0 ? data : prev);
+          if (data.length > 0) setCachedNews(category, data);
+          setLoading(false);
+        }, () => setLoading(false));
+        return;
+      }
       console.error('News fetch error:', error);
-      // On error, still show cached news if available
       const cached = getCachedNews(category);
       if (cached && cached.length > 0) setNews(cached);
       setLoading(false);
@@ -684,9 +700,18 @@ const useNews = (category = 'all', limit = 20, refreshKey = 0) => {
   const loadMore = async () => {
     if (!lastDocRef.current) return;
     try {
-      // Always use simple orderBy — no composite index needed
-      const query = db.collection('news').orderBy('timestamp', 'desc').startAfter(lastDocRef.current).limit(limit * (category === 'all' ? 1 : 2));
-      const snapshot = await query.get();
+      let q;
+      if (category === 'all') {
+        q = db.collection('news').orderBy('timestamp', 'desc').startAfter(lastDocRef.current).limit(limit);
+      } else {
+        // Use server-side category filter (same composite index as main query)
+        q = db.collection('news')
+          .where('category', '==', category)
+          .orderBy('timestamp', 'desc')
+          .startAfter(lastDocRef.current)
+          .limit(limit);
+      }
+      const snapshot = await q.get();
       let newNews = snapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data(),
@@ -694,8 +719,6 @@ const useNews = (category = 'all', limit = 20, refreshKey = 0) => {
       })).filter(n => !n.hidden && (n.status === 'published' || n.status === 'active' || n.status === 'Active' || !n.status));
       if (category === 'all') {
         newNews = newNews.filter(n => !SPECIAL_CATEGORIES.includes(n.category));
-      } else {
-        newNews = newNews.filter(n => n.category === category);
       }
       lastDocRef.current = snapshot.docs[snapshot.docs.length - 1] || lastDocRef.current;
       if (newNews.length > 0) setNews(prev => [...prev, ...newNews]);
@@ -6809,27 +6832,25 @@ const Sidebar = () => {
   const [trending, setTrending] = useState([]);
   const [latest, setLatest] = useState([]);
   useEffect(() => {
-    // Fetch trending news
-    const unsubTrending = db.collection('news').orderBy('views', 'desc').limit(10).onSnapshot(snapshot => {
-      setTrending(snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data(),
-        timestamp: doc.data().timestamp?.toDate()
-      })).filter(n => !n.hidden && (n.status === 'published' || n.status === 'active' || n.status === 'Active' || !n.status)).slice(0, 5));
-    }, () => {});
+    const SIDEBAR_TTL = 5 * 60 * 1000; // refresh every 5 min
+    const normalize = docs => docs.map(doc => ({ id: doc.id, ...doc.data(), timestamp: doc.data().timestamp?.toDate() }))
+      .filter(n => !n.hidden && (n.status === 'published' || n.status === 'active' || n.status === 'Active' || !n.status))
+      .slice(0, 5);
 
-    // Fetch latest news
-    const unsubLatest = db.collection('news').orderBy('timestamp', 'desc').limit(10).onSnapshot(snapshot => {
-      setLatest(snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data(),
-        timestamp: doc.data().timestamp?.toDate()
-      })).filter(n => !n.hidden && (n.status === 'published' || n.status === 'active' || n.status === 'Active' || !n.status)).slice(0, 5));
-    }, () => {});
-    return () => {
-      unsubTrending();
-      unsubLatest();
+    let timer;
+    const fetchSidebar = async () => {
+      try {
+        const [snapT, snapL] = await Promise.all([
+          db.collection('news').orderBy('views', 'desc').limit(10).get(),
+          db.collection('news').orderBy('timestamp', 'desc').limit(10).get()
+        ]);
+        setTrending(normalize(snapT.docs));
+        setLatest(normalize(snapL.docs));
+      } catch (e) {}
+      timer = setTimeout(fetchSidebar, SIDEBAR_TTL);
     };
+    fetchSidebar();
+    return () => clearTimeout(timer);
   }, []);
   const SidebarItem = ({
     item,
