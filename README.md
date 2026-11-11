@@ -3,6 +3,6 @@
 This domain is for sale.
 
 - Domain: **kwtnews.com**
-- Contact: [Instagram @sql.ssl](https://instagram.com/sql.ssl)
+- Contact: [WhatsApp +91 9012277862](https://wa.me/919012277862)
 
 Single-page landing hosted on GitHub Pages.
